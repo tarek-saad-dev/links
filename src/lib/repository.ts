@@ -195,7 +195,10 @@ export async function setAllData(data: AppData): Promise<void> {
 
 // ─── Sync Operations ──────────────────────────────────────────
 
-export async function syncLocalToServer(): Promise<boolean> {
+export async function syncLocalToServer(): Promise<{
+  json: boolean;
+  db: boolean;
+}> {
   return await syncToServer();
 }
 

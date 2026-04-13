@@ -51,7 +51,7 @@ export default function AppShell() {
     toggleFav,
     syncToServer,
     syncFromServer,
-    exportData,
+    syncFromDatabase,
     importData,
   } = useAppData();
 

@@ -7,6 +7,7 @@ import {
   loadData,
   syncToServer as syncToServerStorage,
   syncFromServer as syncFromServerStorage,
+  syncFromDatabase as syncFromDatabaseStorage,
 } from "./storage";
 import { SEED_DATA } from "./seed";
 
@@ -128,6 +129,55 @@ export function useAppData() {
     return data;
   }, [refresh]);
 
+  const syncFromDatabase = useCallback(async () => {
+    const data = await syncFromDatabaseStorage();
+    if (data) {
+      await refresh();
+      setLastSync(new Date());
+    }
+    return data;
+  }, [refresh]);
+
+  // Auto-sync from database (polling every 10 seconds)
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      // Only auto-sync if user is active (page visible)
+      if (document.visibilityState === "visible") {
+        const dbData = await syncFromDatabaseStorage();
+        if (dbData) {
+          // Check if data actually changed by comparing counts
+          const countChanged =
+            clients.length !== dbData.clients.length ||
+            materials.length !== dbData.materials.length;
+
+          // Check by comparing latest material update timestamps (clients don't have updatedAt)
+          const latestLocalMaterial = [...materials].sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          )[0];
+          const latestDbMaterial = [...dbData.materials].sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          )[0];
+
+          const timeChanged =
+            latestLocalMaterial &&
+            latestDbMaterial &&
+            new Date(latestDbMaterial.updatedAt).getTime() >
+              new Date(latestLocalMaterial.updatedAt).getTime();
+
+          if (countChanged || timeChanged) {
+            setClients(dbData.clients);
+            setMaterials(dbData.materials);
+            setLastSync(new Date());
+          }
+        }
+      }
+    }, 10000); // Every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [clients.length, materials.length, clients, materials]);
+
   // Import / Export
   const exportData = useCallback(async (): Promise<string> => {
     const data = await repo.getAllData();
@@ -171,6 +221,7 @@ export function useAppData() {
     toggleFav,
     syncToServer,
     syncFromServer,
+    syncFromDatabase,
     exportData,
     importData,
     refresh,
