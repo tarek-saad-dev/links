@@ -1,0 +1,208 @@
+/**
+ * Repository layer – all CRUD operations for clients & materials.
+ *
+ * Current: Dual-mode storage (localStorage + Server JSON backup)
+ * Future: Will add Database as 3rd source
+ *
+ * All functions are now async to support future database operations.
+ */
+
+import type { Client, MaterialLink, AppData } from "./types";
+import { loadData, saveData, syncToServer, syncFromServer } from "./storage";
+import { generateId, generateSlug, getRandomColor } from "./utils";
+
+// ─── Helpers ────────────────────────────────────────────────
+
+let cachedData: AppData | null = null;
+
+async function getData(): Promise<AppData> {
+  if (!cachedData) {
+    cachedData = await loadData();
+  }
+  return cachedData;
+}
+
+async function persist(data: AppData): Promise<void> {
+  cachedData = data;
+  await saveData(data);
+}
+
+// ─── Client CRUD ────────────────────────────────────────────
+
+export async function getClients(): Promise<Client[]> {
+  return (await getData()).clients;
+}
+
+export async function getClient(id: string): Promise<Client | undefined> {
+  return (await getData()).clients.find((c) => c.id === id);
+}
+
+export async function createClient(
+  input: Pick<Client, "name" | "notes"> & Partial<Pick<Client, "color">>,
+): Promise<Client> {
+  const data = await getData();
+  const client: Client = {
+    id: generateId(),
+    name: input.name.trim(),
+    slug: generateSlug(input.name),
+    notes: input.notes ?? "",
+    color: input.color || getRandomColor(),
+    createdAt: new Date().toISOString(),
+  };
+  data.clients.push(client);
+  await persist(data);
+  return client;
+}
+
+export async function updateClient(
+  id: string,
+  updates: Partial<Pick<Client, "name" | "notes" | "color">>,
+): Promise<Client | undefined> {
+  const data = await getData();
+  const idx = data.clients.findIndex((c) => c.id === id);
+  if (idx === -1) return undefined;
+  if (updates.name) {
+    data.clients[idx].name = updates.name.trim();
+    data.clients[idx].slug = generateSlug(updates.name);
+  }
+  if (updates.notes !== undefined) data.clients[idx].notes = updates.notes;
+  if (updates.color) data.clients[idx].color = updates.color;
+  await persist(data);
+  return data.clients[idx];
+}
+
+export async function deleteClient(id: string): Promise<void> {
+  const data = await getData();
+  data.clients = data.clients.filter((c) => c.id !== id);
+  data.materials = data.materials.filter((m) => m.clientId !== id);
+  await persist(data);
+}
+
+// ─── Material CRUD ──────────────────────────────────────────
+
+export async function getMaterials(): Promise<MaterialLink[]> {
+  return (await getData()).materials;
+}
+
+export async function getMaterial(
+  id: string,
+): Promise<MaterialLink | undefined> {
+  return (await getData()).materials.find((m) => m.id === id);
+}
+
+export async function getMaterialsByClient(
+  clientId: string,
+): Promise<MaterialLink[]> {
+  return (await getData()).materials.filter((m) => m.clientId === clientId);
+}
+
+export async function createMaterial(
+  input: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">,
+): Promise<MaterialLink> {
+  const data = await getData();
+  const now = new Date().toISOString();
+  const material: MaterialLink = {
+    ...input,
+    id: generateId(),
+    title: input.title.trim(),
+    url: input.url.trim(),
+    description: input.description?.trim() ?? "",
+    tags: input.tags.map((t) => t.trim()).filter(Boolean),
+    createdAt: now,
+    updatedAt: now,
+  };
+  data.materials.push(material);
+  await persist(data);
+  return material;
+}
+
+export async function updateMaterial(
+  id: string,
+  updates: Partial<Omit<MaterialLink, "id" | "createdAt">>,
+): Promise<MaterialLink | undefined> {
+  const data = await getData();
+  const idx = data.materials.findIndex((m) => m.id === id);
+  if (idx === -1) return undefined;
+  data.materials[idx] = {
+    ...data.materials[idx],
+    ...updates,
+    updatedAt: new Date().toISOString(),
+  };
+  await persist(data);
+  return data.materials[idx];
+}
+
+export async function deleteMaterial(id: string): Promise<void> {
+  const data = await getData();
+  data.materials = data.materials.filter((m) => m.id !== id);
+  await persist(data);
+}
+
+export async function toggleFavorite(
+  id: string,
+): Promise<MaterialLink | undefined> {
+  const data = await getData();
+  const idx = data.materials.findIndex((m) => m.id === id);
+  if (idx === -1) return undefined;
+  data.materials[idx].isFavorite = !data.materials[idx].isFavorite;
+  data.materials[idx].updatedAt = new Date().toISOString();
+  await persist(data);
+  return data.materials[idx];
+}
+
+// ─── Stats ──────────────────────────────────────────────────
+
+export async function getStats() {
+  const data = await getData();
+  return {
+    totalClients: data.clients.length,
+    totalMaterials: data.materials.length,
+    totalLibraries: data.materials.filter((m) => m.type === "library").length,
+    totalFavorites: data.materials.filter((m) => m.isFavorite).length,
+  };
+}
+
+export async function getClientStats(clientId: string) {
+  const materials = await getMaterialsByClient(clientId);
+  const sorted = [...materials].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+  return {
+    totalLinks: materials.length,
+    totalLibraries: materials.filter((m) => m.type === "library").length,
+    lastAdded: sorted[0]?.createdAt ?? null,
+  };
+}
+
+// ─── Tags ───────────────────────────────────────────────────
+
+export async function getAllTags(): Promise<string[]> {
+  const data = await getData();
+  const tagSet = new Set<string>();
+  data.materials.forEach((m) => m.tags.forEach((t) => tagSet.add(t)));
+  return Array.from(tagSet).sort();
+}
+
+// ─── Bulk data (for import/export) ──────────────────────────
+
+export async function getAllData(): Promise<AppData> {
+  return await getData();
+}
+
+export async function setAllData(data: AppData): Promise<void> {
+  await persist(data);
+}
+
+// ─── Sync Operations ──────────────────────────────────────────
+
+export async function syncLocalToServer(): Promise<boolean> {
+  return await syncToServer();
+}
+
+export async function syncServerToLocal(): Promise<AppData | null> {
+  const data = await syncFromServer();
+  if (data) {
+    cachedData = data;
+  }
+  return data;
+}
