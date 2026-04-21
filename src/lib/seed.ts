@@ -9,6 +9,7 @@ export const SEED_DATA: AppData = {
       notes: "عميل رئيسي - حملات متعددة سنوياً",
       color: "#6366f1",
       createdAt: "2025-01-10T10:00:00.000Z",
+      styleRefs: [],
     },
     {
       id: "c2",
@@ -17,6 +18,7 @@ export const SEED_DATA: AppData = {
       notes: "صالون حلاقة - محتوى شهري",
       color: "#ec4899",
       createdAt: "2025-02-05T12:00:00.000Z",
+      styleRefs: [],
     },
     {
       id: "c3",
@@ -25,6 +27,7 @@ export const SEED_DATA: AppData = {
       notes: "مطعم فاخر - تصوير أطباق وأجواء",
       color: "#f97316",
       createdAt: "2025-03-01T08:00:00.000Z",
+      styleRefs: [],
     },
   ],
   materials: [

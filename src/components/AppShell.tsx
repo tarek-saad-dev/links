@@ -12,6 +12,7 @@ import MaterialCard from "./MaterialCard";
 import QuickAddForm from "./QuickAddForm";
 import EmptyState from "./EmptyState";
 import Badge from "./Badge";
+import StyleRefsPanel from "./StyleRefsPanel";
 import {
   Search,
   Users,
@@ -53,6 +54,9 @@ export default function AppShell() {
     syncFromServer,
     syncFromDatabase,
     importData,
+    addStyleRef,
+    editStyleRef,
+    removeStyleRef,
   } = useAppData();
 
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -494,6 +498,13 @@ export default function AppShell() {
                             <Plus size={14} />
                             إضافة ماتريال لـ {client.name}
                           </button>
+                          <StyleRefsPanel
+                            clientId={client.id}
+                            refs={client.styleRefs ?? []}
+                            onAdd={async (input) => { await addStyleRef(client.id, input); }}
+                            onEdit={async (refId, updates) => { await editStyleRef(client.id, refId, updates); }}
+                            onDelete={(refId) => removeStyleRef(client.id, refId)}
+                          />
                         </div>
                       )}
                     </div>

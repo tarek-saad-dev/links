@@ -1,44 +1,13 @@
 {
   "clients": [
     {
-      "id": "c1",
-      "name": "الجداوي",
-      "slug": "الجداوي",
-      "notes": "عميل رئيسي - حملات متعددة سنوياً",
-      "color": "#3b82f6",
-      "createdAt": "2025-01-10T10:00:00.000Z"
-    },
-    {
-      "id": "ee19511b-7cc9-4327-818b-214adb769674",
-      "name": "Napoli للعطور",
-      "slug": "napoli-للعطور",
+      "id": "a212d1db-2dc6-4b60-b9c1-382d7bdba8bb",
+      "name": "الكواتيحي",
+      "slug": "الكواتيحي",
       "notes": "",
-      "color": "#eab308",
-      "createdAt": "2026-04-12T19:56:26.932Z"
-    },
-    {
-      "id": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "name": "حبيبه عمان",
-      "slug": "حبيبه-عمان",
-      "notes": "",
-      "color": "#f97316",
-      "createdAt": "2026-04-12T20:16:10.009Z"
-    },
-    {
-      "id": "4511c210-a903-48a1-93ba-286568023655",
-      "name": "رخام الجوهره",
-      "slug": "رخام-الجوهره",
-      "notes": "",
-      "color": "#8b5cf6",
-      "createdAt": "2026-04-12T20:22:06.818Z"
-    },
-    {
-      "id": "143484a6-0b66-41d8-a07e-8c9dfea0a530",
-      "name": "نيو شيب",
-      "slug": "نيو-شيب",
-      "notes": "",
-      "color": "#8b5cf6",
-      "createdAt": "2026-04-13T00:21:22.830Z"
+      "color": "#06b6d4",
+      "createdAt": "2026-04-21T14:13:38.119Z",
+      "styleRefs": []
     },
     {
       "id": "07ef7920-2016-417e-8496-321d20a3291e",
@@ -46,111 +15,382 @@
       "slug": "المشتركه-العامه-للسقالات",
       "notes": "",
       "color": "#f43f5e",
-      "createdAt": "2026-04-13T00:25:55.533Z"
+      "createdAt": "2026-04-13T00:25:55.533Z",
+      "styleRefs": []
+    },
+    {
+      "id": "143484a6-0b66-41d8-a07e-8c9dfea0a530",
+      "name": "نيو شيب",
+      "slug": "نيو-شيب",
+      "notes": "",
+      "color": "#8b5cf6",
+      "createdAt": "2026-04-13T00:21:22.830Z",
+      "styleRefs": []
+    },
+    {
+      "id": "4511c210-a903-48a1-93ba-286568023655",
+      "name": "رخام الجوهره",
+      "slug": "رخام-الجوهره",
+      "notes": "",
+      "color": "#8b5cf6",
+      "createdAt": "2026-04-12T20:22:06.818Z",
+      "styleRefs": []
+    },
+    {
+      "id": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "name": "حبيبه عمان",
+      "slug": "حبيبه-عمان",
+      "notes": "",
+      "color": "#f97316",
+      "createdAt": "2026-04-12T20:16:10.009Z",
+      "styleRefs": []
+    },
+    {
+      "id": "ee19511b-7cc9-4327-818b-214adb769674",
+      "name": "Napoli للعطور",
+      "slug": "napoli-للعطور",
+      "notes": "",
+      "color": "#eab308",
+      "createdAt": "2026-04-12T19:56:26.932Z",
+      "styleRefs": []
+    },
+    {
+      "id": "c1",
+      "name": "الجداوي",
+      "slug": "الجداوي",
+      "notes": "عميل رئيسي - حملات متعددة سنوياً",
+      "color": "#3b82f6",
+      "createdAt": "2025-01-10T10:00:00.000Z",
+      "styleRefs": []
     }
   ],
   "materials": [
     {
-      "title": "اطباق الجداوي وغيره",
-      "url": "https://drive.google.com/drive/folders/11UDo7JcWOlTSmTVGopHZs5S241HnLJud",
-      "clientId": "c1",
-      "shootDate": "2026-03-29",
-      "type": "project",
-      "tags": [
-        "اطباق الجداوي",
-        "ريفيو اجنبيه",
-        "صواني الجداوي",
-        "اكل متصور"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "294a3128-7512-418b-a688-9ab26d650077",
-      "createdAt": "2026-04-12T19:55:38.824Z",
-      "updatedAt": "2026-04-12T19:55:38.824Z"
-    },
-    {
-      "title": "تصوير منتجات العطور",
-      "url": "https://drive.google.com/drive/folders/1CpsYKVpV4FDXAwzeNuZZ4VufWoRXoPA6",
-      "clientId": "ee19511b-7cc9-4327-818b-214adb769674",
-      "shootDate": "2026-04-08",
-      "type": "project",
-      "tags": [
-        "عطور متصوره",
-        "عطر احمر"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "12fb5e11-090d-4af0-9cbd-e82b784cf408",
-      "createdAt": "2026-04-12T19:57:55.301Z",
-      "updatedAt": "2026-04-12T19:57:55.301Z"
-    },
-    {
-      "title": "فيديوهات الموديل",
-      "url": "https://drive.google.com/drive/folders/1-eYZb1E_rdpmuXZnxDoVolAGf_a3pAuT",
-      "clientId": "ee19511b-7cc9-4327-818b-214adb769674",
-      "shootDate": "2026-04-04",
-      "type": "project",
-      "tags": [
-        "موديل"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "9cc35331-0d05-4e9e-9284-b0f6c186d0c1",
-      "createdAt": "2026-04-12T19:59:54.461Z",
-      "updatedAt": "2026-04-12T19:59:54.461Z"
-    },
-    {
-      "title": "فيديو متمنتج فيه لقطات للأفرع كلها",
-      "url": "https://drive.google.com/file/d/1oP9RgvcOy00S1wZZCbpd4JC5QjLHVODP/view",
-      "clientId": "c1",
-      "shootDate": "2026-04-01",
-      "type": "project",
-      "tags": [
-        "جداوي من الخارج",
-        "جداوي من الداخل",
-        "افرع الجداوي"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "c1822697-50b8-4e04-a752-5d03f1a05c4e",
-      "createdAt": "2026-04-12T20:07:54.746Z",
-      "updatedAt": "2026-04-12T20:07:54.746Z"
-    },
-    {
-      "title": "اطباق فرديه",
-      "url": "https://drive.google.com/drive/folders/1CnfavwwwP1PwI9f3zCSIc1MQzf8FGedd",
-      "clientId": "c1",
-      "shootDate": "2026-04-05",
-      "type": "project",
-      "tags": [
-        "اطباق فرديه",
-        "اكل متصور"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "4902111d-aff2-4e47-a546-010c3a84e63d",
-      "createdAt": "2026-04-12T20:09:09.975Z",
-      "updatedAt": "2026-04-12T20:09:46.274Z"
-    },
-    {
-      "title": "الجداوي Drone من الخارج",
-      "url": "https://drive.google.com/drive/folders/1QjIPZj2v5Qy_g1txK6VJehjHqXrQOF5b",
-      "clientId": "c1",
-      "shootDate": "2026-04-01",
-      "type": "project",
-      "tags": [
-        "الجداوي من الخارج"
-      ],
+      "id": "decc4d9d-ba21-4f8a-b245-4bfa1d95d426",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "الدرايف الكبير المجمع لكل الماتريال",
+      "url": "https://drive.google.com/drive/folders/1MIXa7SVb8ZlN5G4Vg5tRYTQAn4SC1zf4",
+      "shootDate": "2026-04-13",
+      "type": "library",
+      "tags": [],
       "description": "",
       "isFavorite": true,
-      "id": "50d935dd-1de5-4f87-8d23-50b3ef7a1c47",
-      "createdAt": "2026-04-12T20:10:54.596Z",
-      "updatedAt": "2026-04-12T20:10:54.596Z"
+      "createdAt": "2026-04-13T00:58:21.759Z",
+      "updatedAt": "2026-04-13T00:58:21.759Z"
     },
     {
+      "id": "09053da8-f2f9-4822-baa6-876225713843",
+      "clientId": "143484a6-0b66-41d8-a07e-8c9dfea0a530",
+      "title": "Inbody - interview with old man - products",
+      "url": "https://drive.google.com/drive/folders/1H8SLiudCErUIERi2luBuCGKXpqv8_xM9",
+      "shootDate": "2026-02-27",
+      "type": "project",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:39:20.046Z",
+      "updatedAt": "2026-04-13T00:39:20.046Z"
+    },
+    {
+      "id": "d2099935-ae47-4d76-b534-50778d47ab5d",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "مجمع ماتريال حبيبه عمان",
+      "url": "https://drive.google.com/drive/folders/1CzVBGDKwFZYxnp4TIRAlF1uW_ZsuiSAw",
+      "shootDate": "2026-03-01",
+      "type": "project",
+      "tags": [
+        "كنافه",
+        "طبق حلويات"
+      ],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:36:24.079Z",
+      "updatedAt": "2026-04-13T00:36:24.079Z"
+    },
+    {
+      "id": "81fbf9ee-9032-4c92-aebe-a75625dacaab",
+      "clientId": "143484a6-0b66-41d8-a07e-8c9dfea0a530",
+      "title": "صور منتجات نيو شيب",
+      "url": "https://drive.google.com/drive/folders/11TYsA1Ss0PwgqnGR-TH0jZ-DFrd4IPej",
+      "shootDate": "2026-03-15",
+      "type": "project",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:34:29.285Z",
+      "updatedAt": "2026-04-13T00:34:29.285Z"
+    },
+    {
+      "id": "1d8a8a76-39ae-451d-916f-2fc0c88d5531",
+      "clientId": "c1",
+      "title": "صينية الكبير ماتريال",
+      "url": "https://drive.google.com/drive/folders/1DvBCzlQgq8fJwsN74Ja8q8dcroMhxweI",
+      "shootDate": "2026-03-25",
+      "type": "project",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:33:36.510Z",
+      "updatedAt": "2026-04-13T00:33:36.510Z"
+    },
+    {
+      "id": "cd29fea4-41d4-4d05-bfaf-f0bcdebb6c04",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "سيشن 1 - صور قطع حلويات",
+      "url": "https://drive.google.com/drive/folders/1hDUroXFkfIIqIxHmoQ6iU_3pJfodvI6Z",
+      "shootDate": "",
+      "type": "library",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:32:36.558Z",
+      "updatedAt": "2026-04-13T00:32:36.558Z"
+    },
+    {
+      "id": "e0323e6b-086e-4791-88c6-375a4761023d",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "سيشن 2 - صور صواني واطباق وعلب",
+      "url": "https://drive.google.com/drive/folders/1wKUONIGrPiND2ulU7CnMuUxz8pGEEG9X",
+      "shootDate": "",
+      "type": "library",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:31:19.566Z",
+      "updatedAt": "2026-04-13T00:31:19.566Z"
+    },
+    {
+      "id": "aa874910-be98-4224-94b4-74bf9edd842b",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "سيشن 4 صور اطباق متنوعه",
+      "url": "https://drive.google.com/drive/folders/1SH5jSh8gY7pi7tiAI1nV-dFQn4Fu6WA1",
+      "shootDate": "",
+      "type": "library",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:29:58.165Z",
+      "updatedAt": "2026-04-13T00:29:58.165Z"
+    },
+    {
+      "id": "f8d111dc-d139-4a75-bf7e-492c9e3012c8",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "سيشن 1 متنوع",
+      "url": "https://drive.google.com/drive/folders/1HZbm5HFtDH--9uzD8Wumqw8LDqpEEbZO",
+      "shootDate": "",
+      "type": "library",
+      "tags": [],
+      "description": "",
+      "isFavorite": true,
+      "createdAt": "2026-04-13T00:28:51.569Z",
+      "updatedAt": "2026-04-13T00:28:51.569Z"
+    },
+    {
+      "id": "54b4b4cf-5f21-46fd-8c03-4734c1d6edc0",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "بلوجر ايه نصيف",
+      "url": "https://drive.google.com/drive/folders/1OC_H5E1afDAJQYP0-ZkDzXAfEqAU4h6r",
+      "shootDate": "",
+      "type": "project",
+      "tags": [
+        "بلوجر"
+      ],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:27:19.363Z",
+      "updatedAt": "2026-04-13T00:27:19.363Z"
+    },
+    {
+      "id": "d2f76164-405c-4601-890c-2936d40b4f2a",
+      "clientId": "07ef7920-2016-417e-8496-321d20a3291e",
+      "title": "بوسترات التحريك",
+      "url": "https://drive.google.com/drive/folders/1Ytbo40NxUZkxrgQxE21rnYRI7qhIxRkH",
+      "shootDate": "",
+      "type": "project",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:26:17.412Z",
+      "updatedAt": "2026-04-13T00:26:17.412Z"
+    },
+    {
+      "id": "3b0a990d-4c90-4de9-bb84-c21492c263ff",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "كحك وتبيفور وبسكوت العيد",
+      "url": "https://www.dropbox.com/scl/fo/cvf62xwxtplkpivome7cv/AEgmUK-cCRNGrAQo9ViEB58?dl=0&e=1&rlkey=nkyfk7x9844qe9deyzi8jl6qu",
+      "shootDate": "2026-04-01",
+      "type": "project",
+      "tags": [
+        "عيد",
+        "كحك"
+      ],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:24:41.466Z",
+      "updatedAt": "2026-04-13T00:24:41.466Z"
+    },
+    {
+      "id": "2e0e57f5-780c-41d6-be0a-324310654147",
+      "clientId": "143484a6-0b66-41d8-a07e-8c9dfea0a530",
+      "title": "كابتن جيم - مكملات - فيديو دكتوره",
+      "url": "https://www.dropbox.com/scl/fo/43ezgcqe71sjpaokqh1jb/AOWegns57bwRssa85v2ha50?rlkey=gir76j4w39v1omhaot5t7wzjn&dl=0",
+      "shootDate": "2026-04-01",
+      "type": "project",
+      "tags": [
+        "كابتن جيم",
+        "مكملات"
+      ],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:22:46.202Z",
+      "updatedAt": "2026-04-13T00:22:46.202Z"
+    },
+    {
+      "id": "f132e699-dda5-4efb-82da-6fa682e2fc01",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "صور اطباق حلويات - الباقي في الملاحظات",
+      "url": "https://drive.google.com/drive/folders/1ax--SXigLl7_kMacMIpN1bGK_rugPbqW",
+      "shootDate": "",
+      "type": "project",
+      "tags": [],
+      "description": "https://drive.google.com/file/d/1DqtA9PDe4OJVNzXtMni49uO9S6a3SDTW/view?usp=drivesdk\n\n\nhttps://drive.google.com/file/d/16uaLV_L8WslrwSDfouSq9-xleIa59IPy/view?usp=drivesdk\n\nhttps://drive.google.com/file/d/1S4iOhBcYGT87QikbJg2yJCetpx5uJJKi/view?usp=drivesdk\n\nhttps://drive.google.com/file/d/1vkiOOs7b0fopOBgjaC4Px-WAjJTLcIH8/view?usp=drivesdk\n\nhttps://drive.google.com/file/d/17s6BHgbUaJIcHBYxgsoag7cPADrOXAeb/view?usp=drivesdk\n\nhttps://drive.google.com/file/d/1OXdo54C_jJade94n2BsaPrkvGNJ__CiJ/view?usp=drivesdk",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:19:29.671Z",
+      "updatedAt": "2026-04-13T00:19:29.671Z"
+    },
+    {
+      "id": "51f59f81-e1a1-4f5c-8531-1855afec474f",
+      "clientId": "c1",
+      "title": "ماتريال صناعة الخبز",
+      "url": "https://drive.google.com/drive/folders/1ax--SXigLl7_kMacMIpN1bGK_rugPbqW",
+      "shootDate": "2026-03-15",
+      "type": "project",
+      "tags": [
+        "خبز",
+        "صناعه الخبز"
+      ],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-13T00:12:27.622Z",
+      "updatedAt": "2026-04-13T00:12:27.622Z"
+    },
+    {
+      "id": "c9a40779-79d8-4a87-b502-dbfa9d281c66",
+      "clientId": "c1",
+      "title": "فيديو وحيد خبز في الفرن",
+      "url": "https://drive.google.com/file/d/1Zy1MDWRyuwolLrMWFfP4UXDNOh-JwDd9/view",
+      "shootDate": "",
+      "type": "project",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-12T22:48:20.535Z",
+      "updatedAt": "2026-04-12T22:48:20.535Z"
+    },
+    {
+      "id": "d0da7f94-499b-4c4d-a2ed-e6eb3ac96949",
+      "clientId": "c1",
+      "title": "ماتريال المطبخ",
+      "url": "https://drive.google.com/drive/folders/1GS6NjzwEEeN_eeNOdmZj1_63X7teQfuV",
+      "shootDate": "2026-03-25",
+      "type": "project",
+      "tags": [
+        "المطبخ"
+      ],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-12T20:47:49.671Z",
+      "updatedAt": "2026-04-12T20:47:49.671Z"
+    },
+    {
+      "id": "dee4ddec-91bb-4433-9aa6-fb4ab5238025",
+      "clientId": "4511c210-a903-48a1-93ba-286568023655",
+      "title": "رخام الجوهره",
+      "url": "https://drive.google.com/drive/folders/1Pe99mqpfq2Md1W051mDIu-Rxmq1xg9xW",
+      "shootDate": "2026-01-03",
+      "type": "library",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-12T20:23:35.376Z",
+      "updatedAt": "2026-04-12T20:23:35.376Z"
+    },
+    {
+      "id": "8b81ecbc-f19b-4209-adc6-8157bc7cf6a0",
+      "clientId": "c1",
+      "title": "فيديوهات مجمعه ل فرع الفروانيه",
+      "url": "https://drive.google.com/drive/folders/1kxqUFBYqh2TCuZiGH2QOG3IQqWO0uubJ",
+      "shootDate": "",
+      "type": "library",
+      "tags": [],
+      "description": "",
+      "isFavorite": true,
+      "createdAt": "2026-04-12T20:21:18.970Z",
+      "updatedAt": "2026-04-12T20:21:18.970Z"
+    },
+    {
+      "id": "2d2db95e-5a46-4d6c-845e-fb9fb30a5c8a",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "يوم الكاترينج 3",
+      "url": "https://drive.google.com/drive/folders/1RhS64o3mEnXQx056hRXemW8wOX76g9IA",
+      "shootDate": "",
+      "type": "project",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-12T20:19:25.458Z",
+      "updatedAt": "2026-04-12T20:19:48.571Z"
+    },
+    {
+      "id": "4c4bb7dd-957d-47d5-bb69-ee2be906d468",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "يوم الكاتريرنج 2",
+      "url": "https://drive.google.com/drive/folders/1A2TOxazS8UYT30FjT0yhJ4T6TkqfLEnW",
+      "shootDate": "",
+      "type": "library",
+      "tags": [],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-12T20:18:43.297Z",
+      "updatedAt": "2026-04-12T20:18:43.297Z"
+    },
+    {
+      "id": "b459b2f0-6f34-4e37-a22c-483555ea68b4",
+      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "title": "يوم الكاترينج",
+      "url": "https://drive.google.com/drive/folders/1OEX6UCIyYtrRj0uM5u1MDgb1ofnzpolq",
+      "shootDate": "",
+      "type": "library",
+      "tags": [
+        "كنافه",
+        "اطباق"
+      ],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-12T20:16:45.307Z",
+      "updatedAt": "2026-04-12T20:16:45.307Z"
+    },
+    {
+      "id": "df51548f-7a6e-49df-8fcb-d0ab49a24801",
+      "clientId": "c1",
+      "title": "فيديو فيه VFX مش انا الى عامله",
+      "url": "https://drive.google.com/file/d/1Kd0SUYObQY6SFIbbmiNaKHZKTOTWV_I6/view",
+      "shootDate": "",
+      "type": "project",
+      "tags": [
+        "مياه VFX",
+        "B-roll"
+      ],
+      "description": "",
+      "isFavorite": false,
+      "createdAt": "2026-04-12T20:14:56.478Z",
+      "updatedAt": "2026-04-12T20:14:56.478Z"
+    },
+    {
+      "id": "67ccb48f-3a8a-4971-97fe-2f55a487b8cf",
+      "clientId": "c1",
       "title": "يوم الافتتاح",
       "url": "https://drive.google.com/drive/folders/1_1OqX3Q_QOTLhlqT5KObcOD2B2ytCHVx",
-      "clientId": "c1",
       "shootDate": "2026-03-01",
       "type": "project",
       "tags": [
@@ -161,330 +401,105 @@
       ],
       "description": "",
       "isFavorite": false,
-      "id": "67ccb48f-3a8a-4971-97fe-2f55a487b8cf",
       "createdAt": "2026-04-12T20:13:15.065Z",
       "updatedAt": "2026-04-12T20:13:15.065Z"
     },
     {
-      "title": "فيديو فيه VFX مش انا الى عامله",
-      "url": "https://drive.google.com/file/d/1Kd0SUYObQY6SFIbbmiNaKHZKTOTWV_I6/view",
+      "id": "50d935dd-1de5-4f87-8d23-50b3ef7a1c47",
       "clientId": "c1",
-      "shootDate": "",
-      "type": "project",
-      "tags": [
-        "مياه VFX",
-        "B-roll"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "df51548f-7a6e-49df-8fcb-d0ab49a24801",
-      "createdAt": "2026-04-12T20:14:56.478Z",
-      "updatedAt": "2026-04-12T20:14:56.478Z"
-    },
-    {
-      "title": "يوم الكاترينج",
-      "url": "https://drive.google.com/drive/folders/1OEX6UCIyYtrRj0uM5u1MDgb1ofnzpolq",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
-      "type": "library",
-      "tags": [
-        "كنافه",
-        "اطباق"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "b459b2f0-6f34-4e37-a22c-483555ea68b4",
-      "createdAt": "2026-04-12T20:16:45.307Z",
-      "updatedAt": "2026-04-12T20:16:45.307Z"
-    },
-    {
-      "title": "يوم الكاتريرنج 2",
-      "url": "https://drive.google.com/drive/folders/1A2TOxazS8UYT30FjT0yhJ4T6TkqfLEnW",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
-      "type": "library",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "4c4bb7dd-957d-47d5-bb69-ee2be906d468",
-      "createdAt": "2026-04-12T20:18:43.297Z",
-      "updatedAt": "2026-04-12T20:18:43.297Z"
-    },
-    {
-      "title": "يوم الكاترينج 3",
-      "url": "https://drive.google.com/drive/folders/1RhS64o3mEnXQx056hRXemW8wOX76g9IA",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
-      "type": "project",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "2d2db95e-5a46-4d6c-845e-fb9fb30a5c8a",
-      "createdAt": "2026-04-12T20:19:25.458Z",
-      "updatedAt": "2026-04-12T20:19:48.571Z"
-    },
-    {
-      "title": "فيديوهات مجمعه ل فرع الفروانيه",
-      "url": "https://drive.google.com/drive/folders/1kxqUFBYqh2TCuZiGH2QOG3IQqWO0uubJ",
-      "clientId": "c1",
-      "shootDate": "",
-      "type": "library",
-      "tags": [],
-      "description": "",
-      "isFavorite": true,
-      "id": "8b81ecbc-f19b-4209-adc6-8157bc7cf6a0",
-      "createdAt": "2026-04-12T20:21:18.970Z",
-      "updatedAt": "2026-04-12T20:21:18.970Z"
-    },
-    {
-      "title": "رخام الجوهره",
-      "url": "https://drive.google.com/drive/folders/1Pe99mqpfq2Md1W051mDIu-Rxmq1xg9xW",
-      "clientId": "4511c210-a903-48a1-93ba-286568023655",
-      "shootDate": "2026-01-03",
-      "type": "library",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "dee4ddec-91bb-4433-9aa6-fb4ab5238025",
-      "createdAt": "2026-04-12T20:23:35.376Z",
-      "updatedAt": "2026-04-12T20:23:35.376Z"
-    },
-    {
-      "title": "ماتريال المطبخ",
-      "url": "https://drive.google.com/drive/folders/1GS6NjzwEEeN_eeNOdmZj1_63X7teQfuV",
-      "clientId": "c1",
-      "shootDate": "2026-03-25",
-      "type": "project",
-      "tags": [
-        "المطبخ"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "d0da7f94-499b-4c4d-a2ed-e6eb3ac96949",
-      "createdAt": "2026-04-12T20:47:49.671Z",
-      "updatedAt": "2026-04-12T20:47:49.671Z"
-    },
-    {
-      "title": "فيديو وحيد خبز في الفرن",
-      "url": "https://drive.google.com/file/d/1Zy1MDWRyuwolLrMWFfP4UXDNOh-JwDd9/view",
-      "clientId": "c1",
-      "type": "project",
-      "tags": [],
-      "shootDate": "",
-      "description": "",
-      "isFavorite": false,
-      "id": "c9a40779-79d8-4a87-b502-dbfa9d281c66",
-      "createdAt": "2026-04-12T22:48:20.535Z",
-      "updatedAt": "2026-04-12T22:48:20.535Z"
-    },
-    {
-      "title": "ماتريال صناعة الخبز",
-      "url": "https://drive.google.com/drive/folders/1ax--SXigLl7_kMacMIpN1bGK_rugPbqW",
-      "clientId": "c1",
-      "shootDate": "2026-03-15",
-      "type": "project",
-      "tags": [
-        "خبز",
-        "صناعه الخبز"
-      ],
-      "description": "",
-      "isFavorite": false,
-      "id": "51f59f81-e1a1-4f5c-8531-1855afec474f",
-      "createdAt": "2026-04-13T00:12:27.622Z",
-      "updatedAt": "2026-04-13T00:12:27.622Z"
-    },
-    {
-      "title": "صور اطباق حلويات - الباقي في الملاحظات",
-      "url": "https://drive.google.com/drive/folders/1ax--SXigLl7_kMacMIpN1bGK_rugPbqW",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
-      "type": "project",
-      "tags": [],
-      "description": "https://drive.google.com/file/d/1DqtA9PDe4OJVNzXtMni49uO9S6a3SDTW/view?usp=drivesdk\n\n\nhttps://drive.google.com/file/d/16uaLV_L8WslrwSDfouSq9-xleIa59IPy/view?usp=drivesdk\n\nhttps://drive.google.com/file/d/1S4iOhBcYGT87QikbJg2yJCetpx5uJJKi/view?usp=drivesdk\n\nhttps://drive.google.com/file/d/1vkiOOs7b0fopOBgjaC4Px-WAjJTLcIH8/view?usp=drivesdk\n\nhttps://drive.google.com/file/d/17s6BHgbUaJIcHBYxgsoag7cPADrOXAeb/view?usp=drivesdk\n\nhttps://drive.google.com/file/d/1OXdo54C_jJade94n2BsaPrkvGNJ__CiJ/view?usp=drivesdk",
-      "isFavorite": false,
-      "id": "f132e699-dda5-4efb-82da-6fa682e2fc01",
-      "createdAt": "2026-04-13T00:19:29.671Z",
-      "updatedAt": "2026-04-13T00:19:29.671Z"
-    },
-    {
-      "title": "كابتن جيم - مكملات - فيديو دكتوره",
-      "url": "https://www.dropbox.com/scl/fo/43ezgcqe71sjpaokqh1jb/AOWegns57bwRssa85v2ha50?rlkey=gir76j4w39v1omhaot5t7wzjn&dl=0",
-      "clientId": "143484a6-0b66-41d8-a07e-8c9dfea0a530",
+      "title": "الجداوي Drone من الخارج",
+      "url": "https://drive.google.com/drive/folders/1QjIPZj2v5Qy_g1txK6VJehjHqXrQOF5b",
       "shootDate": "2026-04-01",
       "type": "project",
       "tags": [
-        "كابتن جيم",
-        "مكملات"
+        "الجداوي من الخارج"
+      ],
+      "description": "",
+      "isFavorite": true,
+      "createdAt": "2026-04-12T20:10:54.596Z",
+      "updatedAt": "2026-04-12T20:10:54.596Z"
+    },
+    {
+      "id": "4902111d-aff2-4e47-a546-010c3a84e63d",
+      "clientId": "c1",
+      "title": "اطباق فرديه",
+      "url": "https://drive.google.com/drive/folders/1CnfavwwwP1PwI9f3zCSIc1MQzf8FGedd",
+      "shootDate": "2026-04-05",
+      "type": "project",
+      "tags": [
+        "اطباق فرديه",
+        "اكل متصور"
       ],
       "description": "",
       "isFavorite": false,
-      "id": "2e0e57f5-780c-41d6-be0a-324310654147",
-      "createdAt": "2026-04-13T00:22:46.202Z",
-      "updatedAt": "2026-04-13T00:22:46.202Z"
+      "createdAt": "2026-04-12T20:09:09.975Z",
+      "updatedAt": "2026-04-12T20:09:46.274Z"
     },
     {
-      "title": "كحك وتبيفور وبسكوت العيد",
-      "url": "https://www.dropbox.com/scl/fo/cvf62xwxtplkpivome7cv/AEgmUK-cCRNGrAQo9ViEB58?dl=0&e=1&rlkey=nkyfk7x9844qe9deyzi8jl6qu",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
+      "id": "c1822697-50b8-4e04-a752-5d03f1a05c4e",
+      "clientId": "c1",
+      "title": "فيديو متمنتج فيه لقطات للأفرع كلها",
+      "url": "https://drive.google.com/file/d/1oP9RgvcOy00S1wZZCbpd4JC5QjLHVODP/view",
       "shootDate": "2026-04-01",
       "type": "project",
       "tags": [
-        "عيد",
-        "كحك"
+        "جداوي من الخارج",
+        "جداوي من الداخل",
+        "افرع الجداوي"
       ],
       "description": "",
       "isFavorite": false,
-      "id": "3b0a990d-4c90-4de9-bb84-c21492c263ff",
-      "createdAt": "2026-04-13T00:24:41.466Z",
-      "updatedAt": "2026-04-13T00:24:41.466Z"
+      "createdAt": "2026-04-12T20:07:54.746Z",
+      "updatedAt": "2026-04-12T20:07:54.746Z"
     },
     {
-      "title": "بوسترات التحريك",
-      "url": "https://drive.google.com/drive/folders/1Ytbo40NxUZkxrgQxE21rnYRI7qhIxRkH",
-      "clientId": "07ef7920-2016-417e-8496-321d20a3291e",
-      "shootDate": "",
-      "type": "project",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "d2f76164-405c-4601-890c-2936d40b4f2a",
-      "createdAt": "2026-04-13T00:26:17.412Z",
-      "updatedAt": "2026-04-13T00:26:17.412Z"
-    },
-    {
-      "title": "بلوجر ايه نصيف",
-      "url": "https://drive.google.com/drive/folders/1OC_H5E1afDAJQYP0-ZkDzXAfEqAU4h6r",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
+      "id": "9cc35331-0d05-4e9e-9284-b0f6c186d0c1",
+      "clientId": "ee19511b-7cc9-4327-818b-214adb769674",
+      "title": "فيديوهات الموديل",
+      "url": "https://drive.google.com/drive/folders/1-eYZb1E_rdpmuXZnxDoVolAGf_a3pAuT",
+      "shootDate": "2026-04-04",
       "type": "project",
       "tags": [
-        "بلوجر"
+        "موديل"
       ],
       "description": "",
       "isFavorite": false,
-      "id": "54b4b4cf-5f21-46fd-8c03-4734c1d6edc0",
-      "createdAt": "2026-04-13T00:27:19.363Z",
-      "updatedAt": "2026-04-13T00:27:19.363Z"
+      "createdAt": "2026-04-12T19:59:54.461Z",
+      "updatedAt": "2026-04-12T19:59:54.461Z"
     },
     {
-      "title": "سيشن 1 متنوع",
-      "url": "https://drive.google.com/drive/folders/1HZbm5HFtDH--9uzD8Wumqw8LDqpEEbZO",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
-      "type": "library",
-      "tags": [],
-      "description": "",
-      "isFavorite": true,
-      "id": "f8d111dc-d139-4a75-bf7e-492c9e3012c8",
-      "createdAt": "2026-04-13T00:28:51.569Z",
-      "updatedAt": "2026-04-13T00:28:51.569Z"
-    },
-    {
-      "title": "سيشن 4 صور اطباق متنوعه",
-      "url": "https://drive.google.com/drive/folders/1SH5jSh8gY7pi7tiAI1nV-dFQn4Fu6WA1",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
-      "type": "library",
-      "tags": [],
+      "id": "12fb5e11-090d-4af0-9cbd-e82b784cf408",
+      "clientId": "ee19511b-7cc9-4327-818b-214adb769674",
+      "title": "تصوير منتجات العطور",
+      "url": "https://drive.google.com/drive/folders/1CpsYKVpV4FDXAwzeNuZZ4VufWoRXoPA6",
+      "shootDate": "2026-04-08",
+      "type": "project",
+      "tags": [
+        "عطور متصوره",
+        "عطر احمر"
+      ],
       "description": "",
       "isFavorite": false,
-      "id": "aa874910-be98-4224-94b4-74bf9edd842b",
-      "createdAt": "2026-04-13T00:29:58.165Z",
-      "updatedAt": "2026-04-13T00:29:58.165Z"
+      "createdAt": "2026-04-12T19:57:55.301Z",
+      "updatedAt": "2026-04-12T19:57:55.301Z"
     },
     {
-      "title": "سيشن 2 - صور صواني واطباق وعلب",
-      "url": "https://drive.google.com/drive/folders/1wKUONIGrPiND2ulU7CnMuUxz8pGEEG9X",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
-      "type": "library",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "e0323e6b-086e-4791-88c6-375a4761023d",
-      "createdAt": "2026-04-13T00:31:19.566Z",
-      "updatedAt": "2026-04-13T00:31:19.566Z"
-    },
-    {
-      "title": "سيشن 1 - صور قطع حلويات",
-      "url": "https://drive.google.com/drive/folders/1hDUroXFkfIIqIxHmoQ6iU_3pJfodvI6Z",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "",
-      "type": "library",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "cd29fea4-41d4-4d05-bfaf-f0bcdebb6c04",
-      "createdAt": "2026-04-13T00:32:36.558Z",
-      "updatedAt": "2026-04-13T00:32:36.558Z"
-    },
-    {
-      "title": "صينية الكبير ماتريال",
-      "url": "https://drive.google.com/drive/folders/1DvBCzlQgq8fJwsN74Ja8q8dcroMhxweI",
+      "id": "294a3128-7512-418b-a688-9ab26d650077",
       "clientId": "c1",
-      "shootDate": "2026-03-25",
-      "type": "project",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "1d8a8a76-39ae-451d-916f-2fc0c88d5531",
-      "createdAt": "2026-04-13T00:33:36.510Z",
-      "updatedAt": "2026-04-13T00:33:36.510Z"
-    },
-    {
-      "title": "صور منتجات نيو شيب",
-      "url": "https://drive.google.com/drive/folders/11TYsA1Ss0PwgqnGR-TH0jZ-DFrd4IPej",
-      "clientId": "143484a6-0b66-41d8-a07e-8c9dfea0a530",
-      "shootDate": "2026-03-15",
-      "type": "project",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "81fbf9ee-9032-4c92-aebe-a75625dacaab",
-      "createdAt": "2026-04-13T00:34:29.285Z",
-      "updatedAt": "2026-04-13T00:34:29.285Z"
-    },
-    {
-      "title": "مجمع ماتريال حبيبه عمان",
-      "url": "https://drive.google.com/drive/folders/1CzVBGDKwFZYxnp4TIRAlF1uW_ZsuiSAw",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "2026-03-01",
+      "title": "اطباق الجداوي وغيره",
+      "url": "https://drive.google.com/drive/folders/11UDo7JcWOlTSmTVGopHZs5S241HnLJud",
+      "shootDate": "2026-03-29",
       "type": "project",
       "tags": [
-        "كنافه",
-        "طبق حلويات"
+        "اطباق الجداوي",
+        "ريفيو اجنبيه",
+        "صواني الجداوي",
+        "اكل متصور"
       ],
       "description": "",
       "isFavorite": false,
-      "id": "d2099935-ae47-4d76-b534-50778d47ab5d",
-      "createdAt": "2026-04-13T00:36:24.079Z",
-      "updatedAt": "2026-04-13T00:36:24.079Z"
-    },
-    {
-      "title": "Inbody - interview with old man - products",
-      "url": "https://drive.google.com/drive/folders/1H8SLiudCErUIERi2luBuCGKXpqv8_xM9",
-      "clientId": "143484a6-0b66-41d8-a07e-8c9dfea0a530",
-      "shootDate": "2026-02-27",
-      "type": "project",
-      "tags": [],
-      "description": "",
-      "isFavorite": false,
-      "id": "09053da8-f2f9-4822-baa6-876225713843",
-      "createdAt": "2026-04-13T00:39:20.046Z",
-      "updatedAt": "2026-04-13T00:39:20.046Z"
-    },
-    {
-      "title": "الدرايف الكبير المجمع لكل الماتريال",
-      "url": "https://drive.google.com/drive/folders/1MIXa7SVb8ZlN5G4Vg5tRYTQAn4SC1zf4",
-      "clientId": "9b3681bf-5eac-4c48-bfec-ce785ac87ab1",
-      "shootDate": "2026-04-13",
-      "type": "library",
-      "tags": [],
-      "description": "",
-      "isFavorite": true,
-      "id": "decc4d9d-ba21-4f8a-b245-4bfa1d95d426",
-      "createdAt": "2026-04-13T00:58:21.759Z",
-      "updatedAt": "2026-04-13T00:58:21.759Z"
+      "createdAt": "2026-04-12T19:55:38.824Z",
+      "updatedAt": "2026-04-12T19:55:38.824Z"
     }
   ]
 }

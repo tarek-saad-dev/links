@@ -1,3 +1,18 @@
+export type SocialPlatform =
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "other";
+
+export interface StyleRef {
+  id: string;
+  platform: SocialPlatform;
+  url: string;
+  note: string;
+  createdAt: string;
+}
+
 export interface Client {
   id: string;
   name: string;
@@ -5,6 +20,7 @@ export interface Client {
   notes: string;
   color: string;
   createdAt: string;
+  styleRefs: StyleRef[];
 }
 
 export type MaterialType = "project" | "library";

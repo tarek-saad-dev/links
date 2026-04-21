@@ -104,25 +104,37 @@ async function saveToDatabase(data: AppData): Promise<boolean> {
  * 3. PostgreSQL Database
  * 4. Empty data
  */
+function migrateData(data: AppData): AppData {
+  return {
+    ...data,
+    clients: data.clients.map((c) => ({
+      ...c,
+      styleRefs: c.styleRefs ?? [],
+    })),
+  };
+}
+
 export async function loadData(): Promise<AppData> {
   // First try localStorage
   const local = loadFromLocalStorage();
   if (local && (local.clients.length > 0 || local.materials.length > 0)) {
-    return local;
+    return migrateData(local);
   }
 
   // If localStorage empty, try server backup
   const server = await loadFromServerBackup();
   if (server) {
-    saveToLocalStorage(server);
-    return server;
+    const migrated = migrateData(server);
+    saveToLocalStorage(migrated);
+    return migrated;
   }
 
   // If server backup empty, try database
   const db = await loadFromDatabase();
   if (db) {
-    saveToLocalStorage(db);
-    return db;
+    const migrated = migrateData(db);
+    saveToLocalStorage(migrated);
+    return migrated;
   }
 
   return { clients: [], materials: [] };

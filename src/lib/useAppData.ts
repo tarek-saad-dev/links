@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { Client, MaterialLink, AppData } from "./types";
+import type { Client, MaterialLink, AppData, SocialPlatform } from "./types";
 import * as repo from "./repository";
 import {
   loadData,
@@ -178,6 +178,40 @@ export function useAppData() {
     return () => clearInterval(interval);
   }, [clients.length, materials.length, clients, materials]);
 
+  // Style Refs
+  const addStyleRef = useCallback(
+    async (
+      clientId: string,
+      input: { platform: SocialPlatform; url: string; note?: string },
+    ) => {
+      const ref = await repo.addStyleRef(clientId, input);
+      await refresh();
+      return ref;
+    },
+    [refresh],
+  );
+
+  const editStyleRef = useCallback(
+    async (
+      clientId: string,
+      refId: string,
+      updates: { platform?: SocialPlatform; url?: string; note?: string },
+    ) => {
+      const ref = await repo.updateStyleRef(clientId, refId, updates);
+      await refresh();
+      return ref;
+    },
+    [refresh],
+  );
+
+  const removeStyleRef = useCallback(
+    async (clientId: string, refId: string) => {
+      await repo.deleteStyleRef(clientId, refId);
+      await refresh();
+    },
+    [refresh],
+  );
+
   // Import / Export
   const exportData = useCallback(async (): Promise<string> => {
     const data = await repo.getAllData();
@@ -224,6 +258,9 @@ export function useAppData() {
     syncFromDatabase,
     exportData,
     importData,
+    addStyleRef,
+    editStyleRef,
+    removeStyleRef,
     refresh,
   };
 }

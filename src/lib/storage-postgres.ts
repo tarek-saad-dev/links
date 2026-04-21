@@ -1,11 +1,11 @@
 /**
  * PostgreSQL Storage Layer (Neon Database)
- * 
+ *
  * This is the THIRD source in the chain:
  * 1. localStorage (Primary - browser)
  * 2. Server JSON backup (Secondary - file)
  * 3. PostgreSQL (Tertiary - database)
- * 
+ *
  * All sources sync with each other.
  */
 
@@ -15,7 +15,9 @@ import type { AppData, Client, MaterialLink } from "./types";
 // ─── Client Operations ─────────────────────────────────────────
 
 export async function getClientsFromDB(): Promise<Client[]> {
-  const result = await pool.query("SELECT * FROM clients ORDER BY created_at DESC");
+  const result = await pool.query(
+    "SELECT * FROM clients ORDER BY created_at DESC",
+  );
   return result.rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -23,6 +25,7 @@ export async function getClientsFromDB(): Promise<Client[]> {
     notes: row.notes || "",
     color: row.color,
     createdAt: row.created_at,
+    styleRefs: row.style_refs ?? [],
   }));
 }
 
@@ -35,7 +38,14 @@ export async function saveClientToDB(client: Client): Promise<void> {
        slug = EXCLUDED.slug,
        notes = EXCLUDED.notes,
        color = EXCLUDED.color`,
-    [client.id, client.name, client.slug, client.notes, client.color, client.createdAt]
+    [
+      client.id,
+      client.name,
+      client.slug,
+      client.notes,
+      client.color,
+      client.createdAt,
+    ],
   );
 }
 
@@ -46,7 +56,9 @@ export async function deleteClientFromDB(id: string): Promise<void> {
 // ─── Material Operations ─────────────────────────────────────
 
 export async function getMaterialsFromDB(): Promise<MaterialLink[]> {
-  const result = await pool.query("SELECT * FROM materials ORDER BY created_at DESC");
+  const result = await pool.query(
+    "SELECT * FROM materials ORDER BY created_at DESC",
+  );
   return result.rows.map((row) => ({
     id: row.id,
     clientId: row.client_id,
@@ -88,7 +100,7 @@ export async function saveMaterialToDB(material: MaterialLink): Promise<void> {
       material.isFavorite,
       material.createdAt,
       material.updatedAt,
-    ]
+    ],
   );
 }
 
@@ -120,7 +132,7 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
       await client.query(
         `INSERT INTO clients (id, name, slug, notes, color, created_at)
          VALUES ($1, $2, $3, $4, $5, $6)`,
-        [c.id, c.name, c.slug, c.notes, c.color, c.createdAt]
+        [c.id, c.name, c.slug, c.notes, c.color, c.createdAt],
       );
     }
 
@@ -141,7 +153,7 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
           m.isFavorite,
           m.createdAt,
           m.updatedAt,
-        ]
+        ],
       );
     }
 

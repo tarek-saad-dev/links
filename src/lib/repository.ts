@@ -7,7 +7,13 @@
  * All functions are now async to support future database operations.
  */
 
-import type { Client, MaterialLink, AppData } from "./types";
+import type {
+  Client,
+  MaterialLink,
+  AppData,
+  StyleRef,
+  SocialPlatform,
+} from "./types";
 import { loadData, saveData, syncToServer, syncFromServer } from "./storage";
 import { generateId, generateSlug, getRandomColor } from "./utils";
 
@@ -48,6 +54,7 @@ export async function createClient(
     notes: input.notes ?? "",
     color: input.color || getRandomColor(),
     createdAt: new Date().toISOString(),
+    styleRefs: [],
   };
   data.clients.push(client);
   await persist(data);
@@ -200,6 +207,61 @@ export async function syncLocalToServer(): Promise<{
   db: boolean;
 }> {
   return await syncToServer();
+}
+
+// ─── Style Refs ──────────────────────────────────────────────
+
+export async function addStyleRef(
+  clientId: string,
+  input: { platform: SocialPlatform; url: string; note?: string },
+): Promise<StyleRef | undefined> {
+  const data = await getData();
+  const idx = data.clients.findIndex((c) => c.id === clientId);
+  if (idx === -1) return undefined;
+  if (!data.clients[idx].styleRefs) data.clients[idx].styleRefs = [];
+  const ref: StyleRef = {
+    id: generateId(),
+    platform: input.platform,
+    url: input.url.trim(),
+    note: input.note?.trim() ?? "",
+    createdAt: new Date().toISOString(),
+  };
+  data.clients[idx].styleRefs.push(ref);
+  await persist(data);
+  return ref;
+}
+
+export async function updateStyleRef(
+  clientId: string,
+  refId: string,
+  updates: Partial<Pick<StyleRef, "platform" | "url" | "note">>,
+): Promise<StyleRef | undefined> {
+  const data = await getData();
+  const ci = data.clients.findIndex((c) => c.id === clientId);
+  if (ci === -1) return undefined;
+  if (!data.clients[ci].styleRefs) data.clients[ci].styleRefs = [];
+  const ri = data.clients[ci].styleRefs.findIndex((r) => r.id === refId);
+  if (ri === -1) return undefined;
+  data.clients[ci].styleRefs[ri] = {
+    ...data.clients[ci].styleRefs[ri],
+    ...updates,
+  };
+  await persist(data);
+  return data.clients[ci].styleRefs[ri];
+}
+
+export async function deleteStyleRef(
+  clientId: string,
+  refId: string,
+): Promise<void> {
+  const data = await getData();
+  const ci = data.clients.findIndex((c) => c.id === clientId);
+  if (ci === -1) return;
+  if (!data.clients[ci].styleRefs) return;
+  data.clients[ci].styleRefs = data.clients[ci].styleRefs.filter(
+    (r) => r.id !== refId,
+  );
+  await persist(data);
 }
 
 export async function syncServerToLocal(): Promise<AppData | null> {
