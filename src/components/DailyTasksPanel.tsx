@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { DailyTask, Client, MaterialLink, MaterialType, StyleRef } from "@/lib/types";
+import type { DailyTask, Client, MaterialLink, MaterialType, SocialPlatform, StyleRef } from "@/lib/types";
 import {
   CheckCircle2,
   Circle,
@@ -39,6 +39,7 @@ interface DailyTasksPanelProps {
   onReorder: (date: string, orderedIds: string[]) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onAddMaterial: (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">) => Promise<MaterialLink>;
+  onAddStyleRef: (clientId: string, input: { platform: SocialPlatform; url: string; note?: string }) => Promise<StyleRef | undefined>;
 }
 
 const TODAY = new Date().toISOString().split("T")[0];
@@ -59,6 +60,15 @@ function addDays(dateStr: string, n: number) {
 }
 
 const ADD_NEW_MATERIAL = "__add_new__";
+const ADD_NEW_REF = "__add_new_ref__";
+
+const PLATFORMS: { value: SocialPlatform; label: string }[] = [
+  { value: "instagram", label: "Instagram" },
+  { value: "facebook", label: "Facebook" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "youtube", label: "YouTube" },
+  { value: "other", label: "Other" },
+];
 
 export default function DailyTasksPanel({
   tasks,
@@ -69,6 +79,7 @@ export default function DailyTasksPanel({
   onReorder,
   onDelete,
   onAddMaterial,
+  onAddStyleRef,
 }: DailyTasksPanelProps) {
   const [date, setDate] = useState(TODAY);
   const [showForm, setShowForm] = useState(false);
@@ -105,6 +116,29 @@ export default function DailyTasksPanel({
   const [quickMat, setQuickMat] = useState({ title: "", url: "", type: "project" as MaterialType });
   const [quickMatSaving, setQuickMatSaving] = useState(false);
   const showQuickMat = form.materialId === ADD_NEW_MATERIAL;
+
+  // Inline quick-add style ref
+  const [quickRef, setQuickRef] = useState({ platform: "instagram" as SocialPlatform, url: "", note: "" });
+  const [quickRefSaving, setQuickRefSaving] = useState(false);
+  const showQuickRef = form.styleRefId === ADD_NEW_REF;
+
+  async function handleQuickAddStyleRef() {
+    if (!quickRef.url.trim() || !form.clientId) return;
+    setQuickRefSaving(true);
+    try {
+      const ref = await onAddStyleRef(form.clientId, {
+        platform: quickRef.platform,
+        url: quickRef.url.trim(),
+        note: quickRef.note.trim(),
+      });
+      if (ref) {
+        setForm((f) => ({ ...f, styleRefId: ref.id }));
+        setQuickRef({ platform: "instagram", url: "", note: "" });
+      }
+    } finally {
+      setQuickRefSaving(false);
+    }
+  }
 
   async function handleQuickAddMaterial() {
     if (!quickMat.title.trim() || !form.clientId) return;
@@ -383,8 +417,8 @@ export default function DailyTasksPanel({
                           onClick={() => handleMaterialClick(material)}
                           title={isLocalOnly ? (isCopied ? "تم نسخ المسار" : "نسخ مسار الجهاز") : "فتح في تاب جديد"}
                           className={`flex items-center gap-1 text-xs rounded-lg px-2 py-1 border transition-colors ${isCopied
-                              ? "bg-emerald-50 border-emerald-200 text-emerald-600"
-                              : "bg-zinc-50 border-zinc-200 text-zinc-500 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600"
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-600"
+                            : "bg-zinc-50 border-zinc-200 text-zinc-500 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600"
                             }`}
                         >
                           <Link2 size={11} />
@@ -574,19 +608,85 @@ export default function DailyTasksPanel({
           )}
 
           {/* style ref (optional) */}
-          {selectedClientStyleRefs.length > 0 && (
-            <select
-              value={form.styleRefId}
-              onChange={(e) => setForm({ ...form, styleRefId: e.target.value })}
-              className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
-            >
-              <option value="">ريفرنس ستايل (اختياري)...</option>
-              {selectedClientStyleRefs.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.platform} {r.note ? `— ${r.note}` : ""}
-                </option>
-              ))}
-            </select>
+          {form.clientId && (
+            <div className="space-y-2">
+              <select
+                value={form.styleRefId}
+                onChange={(e) => {
+                  setForm({ ...form, styleRefId: e.target.value });
+                  if (e.target.value !== ADD_NEW_REF) {
+                    setQuickRef({ platform: "instagram", url: "", note: "" });
+                  }
+                }}
+                className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+              >
+                <option value="">ريفرنس ستايل (اختياري)...</option>
+                {selectedClientStyleRefs.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.platform} {r.note ? `— ${r.note}` : ""}
+                  </option>
+                ))}
+                <option value={ADD_NEW_REF}>➕ إضافة ريفرنس جديد...</option>
+              </select>
+
+              {showQuickRef && (
+                <div className="rounded-lg border border-purple-100 bg-purple-50/60 p-3 space-y-2">
+                  <p className="text-xs font-semibold text-purple-700">ريفرنس جديد — سيُضاف تلقائياً للعميل</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PLATFORMS.map((p) => (
+                      <button
+                        key={p.value}
+                        type="button"
+                        onClick={() => setQuickRef({ ...quickRef, platform: p.value })}
+                        className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-colors ${quickRef.platform === p.value
+                            ? "bg-purple-600 border-purple-600 text-white"
+                            : "bg-white border-zinc-200 text-zinc-500 hover:border-purple-300"
+                          }`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder="الرابط..."
+                    value={quickRef.url}
+                    onChange={(e) => setQuickRef({ ...quickRef, url: e.target.value })}
+                    className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white"
+                    dir="ltr"
+                  />
+                  <input
+                    type="text"
+                    placeholder="وصف / ملاحظة (اختياري)..."
+                    value={quickRef.note}
+                    onChange={(e) => setQuickRef({ ...quickRef, note: e.target.value })}
+                    className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleQuickAddStyleRef}
+                      disabled={!quickRef.url.trim() || quickRefSaving}
+                      className="flex-1 text-xs font-medium bg-purple-600 text-white rounded-lg py-1.5 hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      {quickRefSaving ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
+                      {quickRefSaving ? "جاري الحفظ..." : "إضافة"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm((f) => ({ ...f, styleRefId: "" }));
+                        setQuickRef({ platform: "instagram", url: "", note: "" });
+                      }}
+                      className="px-3 text-xs text-zinc-500 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+                    >
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
           {/* notes */}

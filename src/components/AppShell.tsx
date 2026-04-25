@@ -662,6 +662,7 @@ export default function AppShell() {
               onReorder={reorderTasks}
               onDelete={removeDailyTask}
               onAddMaterial={addMaterial}
+              onAddStyleRef={addStyleRef}
             />
           </div>
         )}
