@@ -13,6 +13,8 @@ import type {
   AppData,
   StyleRef,
   SocialPlatform,
+  DailyTask,
+  TaskStatus,
 } from "./types";
 import { loadData, saveData } from "./storage";
 import { generateId, generateSlug, getRandomColor } from "./utils";
@@ -248,3 +250,87 @@ export async function deleteStyleRef(
   );
   await persist(data);
 }
+
+// ─── Daily Tasks ─────────────────────────────────────────────────────────────
+
+export async function getDailyTasks(date?: string): Promise<DailyTask[]> {
+  const data = await getData();
+  const tasks = data.dailyTasks ?? [];
+  if (date) return tasks.filter((t) => t.date === date);
+  return tasks;
+}
+
+export async function createDailyTask(input: {
+  title: string;
+  clientId: string;
+  date: string;
+  materialId?: string | null;
+  styleRefId?: string | null;
+  notes?: string;
+}): Promise<DailyTask> {
+  const data = await getData();
+  const tasks = data.dailyTasks ?? [];
+  const dayTasks = tasks.filter((t) => t.date === input.date);
+  const task: DailyTask = {
+    id: generateId(),
+    title: input.title.trim(),
+    clientId: input.clientId,
+    date: input.date,
+    materialId: input.materialId ?? null,
+    styleRefId: input.styleRefId ?? null,
+    status: "todo",
+    order: dayTasks.length,
+    notes: input.notes?.trim() ?? "",
+    createdAt: new Date().toISOString(),
+  };
+  data.dailyTasks = [...tasks, task];
+  await persist(data);
+  return task;
+}
+
+export async function updateDailyTask(
+  id: string,
+  updates: Partial<
+    Pick<
+      DailyTask,
+      | "title"
+      | "status"
+      | "notes"
+      | "materialId"
+      | "styleRefId"
+      | "clientId"
+      | "order"
+    >
+  >,
+): Promise<DailyTask | undefined> {
+  const data = await getData();
+  const tasks = data.dailyTasks ?? [];
+  const idx = tasks.findIndex((t) => t.id === id);
+  if (idx === -1) return undefined;
+  tasks[idx] = { ...tasks[idx], ...updates };
+  data.dailyTasks = tasks;
+  await persist(data);
+  return tasks[idx];
+}
+
+export async function reorderDailyTasks(
+  date: string,
+  orderedIds: string[],
+): Promise<void> {
+  const data = await getData();
+  const tasks = data.dailyTasks ?? [];
+  orderedIds.forEach((id, index) => {
+    const t = tasks.find((t) => t.id === id && t.date === date);
+    if (t) t.order = index;
+  });
+  data.dailyTasks = tasks;
+  await persist(data);
+}
+
+export async function deleteDailyTask(id: string): Promise<void> {
+  const data = await getData();
+  data.dailyTasks = (data.dailyTasks ?? []).filter((t) => t.id !== id);
+  await persist(data);
+}
+
+export type { TaskStatus };

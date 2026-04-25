@@ -39,9 +39,25 @@ export interface MaterialLink {
   updatedAt: string;
 }
 
+export type TaskStatus = "todo" | "done";
+
+export interface DailyTask {
+  id: string;
+  date: string;
+  title: string;
+  clientId: string;
+  materialId: string | null;
+  styleRefId: string | null;
+  status: TaskStatus;
+  order: number;
+  notes: string;
+  createdAt: string;
+}
+
 export interface AppData {
   clients: Client[];
   materials: MaterialLink[];
+  dailyTasks: DailyTask[];
 }
 
 export type SortOption =

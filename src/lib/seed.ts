@@ -110,4 +110,5 @@ export const SEED_DATA: AppData = {
       updatedAt: "2025-03-06T13:00:00.000Z",
     },
   ],
+  dailyTasks: [],
 };

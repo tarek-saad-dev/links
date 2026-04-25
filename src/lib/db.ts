@@ -68,6 +68,22 @@ export async function initDatabase(): Promise<void> {
       )
     `);
 
+    // Create daily_tasks table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS daily_tasks (
+        id TEXT PRIMARY KEY,
+        date TEXT NOT NULL,
+        title TEXT NOT NULL,
+        client_id TEXT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+        material_id TEXT,
+        style_ref_id TEXT,
+        status TEXT NOT NULL DEFAULT 'todo',
+        "order" INTEGER NOT NULL DEFAULT 0,
+        notes TEXT DEFAULT '',
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL
+      )
+    `);
+
     console.log("✅ Database tables initialized");
   } finally {
     client.release();

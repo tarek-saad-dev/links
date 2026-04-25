@@ -10,7 +10,7 @@
  */
 
 import { pool } from "./db";
-import type { AppData, Client, MaterialLink } from "./types";
+import type { AppData, Client, DailyTask, MaterialLink } from "./types";
 
 // ─── Client Operations ─────────────────────────────────────────
 
@@ -110,14 +110,67 @@ export async function deleteMaterialFromDB(id: string): Promise<void> {
   await pool.query("DELETE FROM materials WHERE id = $1", [id]);
 }
 
+// ─── Daily Task Operations ────────────────────────────────────
+
+export async function getDailyTasksFromDB(): Promise<DailyTask[]> {
+  const result = await pool.query(
+    'SELECT * FROM daily_tasks ORDER BY date DESC, "order" ASC',
+  );
+  return result.rows.map((row) => ({
+    id: row.id,
+    date: row.date,
+    title: row.title,
+    clientId: row.client_id,
+    materialId: row.material_id ?? null,
+    styleRefId: row.style_ref_id ?? null,
+    status: row.status,
+    order: row.order,
+    notes: row.notes || "",
+    createdAt: row.created_at,
+  }));
+}
+
+export async function saveDailyTaskToDB(task: DailyTask): Promise<void> {
+  await pool.query(
+    `INSERT INTO daily_tasks (id, date, title, client_id, material_id, style_ref_id, status, "order", notes, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     ON CONFLICT (id) DO UPDATE SET
+       date = EXCLUDED.date,
+       title = EXCLUDED.title,
+       client_id = EXCLUDED.client_id,
+       material_id = EXCLUDED.material_id,
+       style_ref_id = EXCLUDED.style_ref_id,
+       status = EXCLUDED.status,
+       "order" = EXCLUDED."order",
+       notes = EXCLUDED.notes`,
+    [
+      task.id,
+      task.date,
+      task.title,
+      task.clientId,
+      task.materialId ?? null,
+      task.styleRefId ?? null,
+      task.status,
+      task.order,
+      task.notes,
+      task.createdAt,
+    ],
+  );
+}
+
+export async function deleteDailyTaskFromDB(id: string): Promise<void> {
+  await pool.query("DELETE FROM daily_tasks WHERE id = $1", [id]);
+}
+
 // ─── Bulk Operations ──────────────────────────────────────────
 
 export async function getAllDataFromDB(): Promise<AppData> {
-  const [clients, materials] = await Promise.all([
+  const [clients, materials, dailyTasks] = await Promise.all([
     getClientsFromDB(),
     getMaterialsFromDB(),
+    getDailyTasksFromDB(),
   ]);
-  return { clients, materials };
+  return { clients, materials, dailyTasks };
 }
 
 export async function saveAllDataToDB(data: AppData): Promise<void> {
@@ -126,6 +179,7 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
     await client.query("BEGIN");
 
     // Clear existing data
+    await client.query("DELETE FROM daily_tasks");
     await client.query("DELETE FROM materials");
     await client.query("DELETE FROM clients");
 
@@ -167,6 +221,26 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
       );
     }
 
+    // Insert daily tasks
+    for (const t of data.dailyTasks ?? []) {
+      await client.query(
+        `INSERT INTO daily_tasks (id, date, title, client_id, material_id, style_ref_id, status, "order", notes, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        [
+          t.id,
+          t.date,
+          t.title,
+          t.clientId,
+          t.materialId ?? null,
+          t.styleRefId ?? null,
+          t.status,
+          t.order,
+          t.notes,
+          t.createdAt,
+        ],
+      );
+    }
+
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -180,6 +254,7 @@ export async function clearAllDataFromDB(): Promise<void> {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    await client.query("DELETE FROM daily_tasks");
     await client.query("DELETE FROM materials");
     await client.query("DELETE FROM clients");
     await client.query("COMMIT");

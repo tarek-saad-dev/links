@@ -12,6 +12,7 @@ import QuickAddForm from "./QuickAddForm";
 import EmptyState from "./EmptyState";
 import Badge from "./Badge";
 import StyleRefsPanel from "./StyleRefsPanel";
+import DailyTasksPanel from "./DailyTasksPanel";
 import {
   Search,
   Users,
@@ -28,9 +29,10 @@ import {
   SlidersHorizontal,
   ChevronDown,
   RefreshCw,
+  CalendarDays,
 } from "lucide-react";
 
-type Tab = "dashboard" | "clients" | "materials";
+type Tab = "dashboard" | "clients" | "materials" | "tasks";
 
 export default function AppShell() {
   const {
@@ -52,6 +54,11 @@ export default function AppShell() {
     addStyleRef,
     editStyleRef,
     removeStyleRef,
+    dailyTasks,
+    addDailyTask,
+    editDailyTask,
+    reorderTasks,
+    removeDailyTask,
   } = useAppData();
 
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -239,6 +246,7 @@ export default function AppShell() {
           <div className="flex gap-1 -mb-px">
             {([
               { key: "dashboard" as Tab, label: "الرئيسية", icon: <LayoutDashboard size={16} /> },
+              { key: "tasks" as Tab, label: "تاسكات اليوم", icon: <CalendarDays size={16} /> },
               { key: "clients" as Tab, label: "العملاء", icon: <Users size={16} /> },
               { key: "materials" as Tab, label: "الماتريال", icon: <Link2 size={16} /> },
             ]).map((t) => (
@@ -639,6 +647,21 @@ export default function AppShell() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ─── TASKS ─── */}
+        {tab === "tasks" && (
+          <div className="max-w-2xl mx-auto">
+            <DailyTasksPanel
+              tasks={dailyTasks}
+              clients={clients}
+              materials={materials}
+              onAdd={addDailyTask}
+              onEdit={editDailyTask}
+              onReorder={reorderTasks}
+              onDelete={removeDailyTask}
+            />
           </div>
         )}
       </main>

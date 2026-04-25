@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { Client, MaterialLink, AppData, SocialPlatform } from "./types";
+import type {
+  Client,
+  MaterialLink,
+  AppData,
+  SocialPlatform,
+  DailyTask,
+} from "./types";
 import * as repo from "./repository";
 import {
   loadData,
@@ -11,6 +17,7 @@ import {
 export function useAppData() {
   const [clients, setClients] = useState<Client[]>([]);
   const [materials, setMaterials] = useState<MaterialLink[]>([]);
+  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([]);
   const [ready, setReady] = useState(false);
   const [lastSync, setLastSync] = useState<Date | null>(null);
 
@@ -18,6 +25,7 @@ export function useAppData() {
     const data = await loadData();
     setClients(data.clients);
     setMaterials(data.materials);
+    setDailyTasks(data.dailyTasks ?? []);
   }, []);
 
   useEffect(() => {
@@ -25,6 +33,7 @@ export function useAppData() {
       const data = await loadData();
       setClients(data.clients);
       setMaterials(data.materials);
+      setDailyTasks(data.dailyTasks ?? []);
       setReady(true);
     }
     init();
@@ -144,6 +153,62 @@ export function useAppData() {
     [refresh],
   );
 
+  // Daily Task operations
+  const addDailyTask = useCallback(
+    async (input: {
+      title: string;
+      clientId: string;
+      date: string;
+      materialId?: string | null;
+      styleRefId?: string | null;
+      notes?: string;
+    }) => {
+      const task = await repo.createDailyTask(input);
+      await refresh();
+      return task;
+    },
+    [refresh],
+  );
+
+  const editDailyTask = useCallback(
+    async (
+      id: string,
+      updates: Partial<
+        Pick<
+          DailyTask,
+          | "title"
+          | "status"
+          | "notes"
+          | "materialId"
+          | "styleRefId"
+          | "clientId"
+          | "order"
+        >
+      >,
+    ) => {
+      const task = await repo.updateDailyTask(id, updates);
+      await refresh();
+      return task;
+    },
+    [refresh],
+  );
+
+  const reorderTasks = useCallback(
+    async (date: string, orderedIds: string[]) => {
+      await repo.reorderDailyTasks(date, orderedIds);
+      await refresh();
+    },
+    [refresh],
+  );
+
+  const removeDailyTask = useCallback(
+    async (id: string) => {
+      await repo.deleteDailyTask(id);
+      await refresh();
+    },
+    [refresh],
+  );
+
   // Import / Export
   const exportData = useCallback(async (): Promise<string> => {
     const data = await repo.getAllData();
@@ -175,6 +240,7 @@ export function useAppData() {
     ready,
     clients,
     materials,
+    dailyTasks,
     stats,
     allTags,
     lastSync,
@@ -191,6 +257,10 @@ export function useAppData() {
     addStyleRef,
     editStyleRef,
     removeStyleRef,
+    addDailyTask,
+    editDailyTask,
+    reorderTasks,
+    removeDailyTask,
     refresh,
   };
 }

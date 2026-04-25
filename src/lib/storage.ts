@@ -73,6 +73,7 @@ function migrateData(data: AppData): AppData {
       ...c,
       styleRefs: c.styleRefs ?? [],
     })),
+    dailyTasks: data.dailyTasks ?? [],
   };
 }
 
@@ -94,7 +95,7 @@ export async function loadData(): Promise<AppData> {
   const local = loadFromLocalStorage();
   if (local) return local;
 
-  return { clients: [], materials: [] };
+  return { clients: [], materials: [], dailyTasks: [] };
 }
 
 /**
