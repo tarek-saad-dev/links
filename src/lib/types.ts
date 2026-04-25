@@ -40,7 +40,7 @@ export interface MaterialLink {
   updatedAt: string;
 }
 
-export type TaskStatus = "todo" | "done";
+export type TaskStatus = "todo" | "pending" | "done";
 
 export interface DailyTask {
   id: string;

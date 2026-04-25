@@ -5,6 +5,7 @@ import type { DailyTask, Client, MaterialLink, MaterialType, SocialPlatform, Sty
 import {
   CheckCircle2,
   Circle,
+  Clock,
   Plus,
   Trash2,
   GripVertical,
@@ -167,6 +168,7 @@ export default function DailyTasksPanel({
     .sort((a, b) => a.order - b.order);
 
   const doneCount = dayTasks.filter((t) => t.status === "done").length;
+  const pendingCount = dayTasks.filter((t) => t.status === "pending").length;
 
   const selectedClientMaterials = form.clientId
     ? materials.filter((m) => m.clientId === form.clientId)
@@ -222,10 +224,16 @@ export default function DailyTasksPanel({
     setShowForm(true);
   }
 
+  const STATUS_CYCLE: Record<DailyTask["status"], DailyTask["status"]> = {
+    todo: "pending",
+    pending: "done",
+    done: "todo",
+  };
+
   async function toggleStatus(task: DailyTask) {
     setTogglingId(task.id);
     try {
-      await onEdit(task.id, { status: task.status === "done" ? "todo" : "done" });
+      await onEdit(task.id, { status: STATUS_CYCLE[task.status] });
     } finally {
       setTogglingId(null);
     }
@@ -325,15 +333,30 @@ export default function DailyTasksPanel({
       {dayTasks.length > 0 && (
         <div className="bg-white rounded-xl border border-zinc-200 px-4 py-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-zinc-500">التقدم</span>
-            <span className="text-xs font-medium text-zinc-700">
-              {doneCount} / {dayTasks.length}
-            </span>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="flex items-center gap-1 text-zinc-400">
+                <Circle size={10} />
+                {dayTasks.length - doneCount - pendingCount} لسه متبديش
+              </span>
+              <span className="flex items-center gap-1 text-amber-500">
+                <Clock size={10} />
+                {pendingCount} مستني موافقة
+              </span>
+              <span className="flex items-center gap-1 text-emerald-600">
+                <CheckCircle2 size={10} />
+                {doneCount} تمت
+              </span>
+            </div>
+            <span className="text-xs font-medium text-zinc-500">{dayTasks.length} تاسك</span>
           </div>
-          <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
+          <div className="h-2 bg-zinc-100 rounded-full overflow-hidden flex">
             <div
-              className="h-full bg-emerald-500 rounded-full transition-all duration-300"
+              className="h-full bg-emerald-500 transition-all duration-300"
               style={{ width: `${(doneCount / dayTasks.length) * 100}%` }}
+            />
+            <div
+              className="h-full bg-amber-400 transition-all duration-300"
+              style={{ width: `${(pendingCount / dayTasks.length) * 100}%` }}
             />
           </div>
         </div>
@@ -364,8 +387,10 @@ export default function DailyTasksPanel({
               className={`group bg-white rounded-xl border transition-all duration-150 ${isDragOver
                 ? "border-indigo-400 shadow-md scale-[1.01]"
                 : task.status === "done"
-                  ? "border-zinc-100 opacity-60"
-                  : "border-zinc-200 hover:border-zinc-300 hover:shadow-sm"
+                  ? "border-zinc-100 opacity-50"
+                  : task.status === "pending"
+                    ? "border-amber-200 bg-amber-50/30"
+                    : "border-zinc-200 hover:border-zinc-300 hover:shadow-sm"
                 } ${draggingId === task.id ? "opacity-40" : ""}`}
             >
               <div className="flex items-start gap-3 px-3 py-3">
@@ -378,12 +403,19 @@ export default function DailyTasksPanel({
                 <button
                   onClick={() => toggleStatus(task)}
                   disabled={togglingId === task.id}
+                  title={
+                    task.status === "done" ? "تم — اضغط للتراجع"
+                      : task.status === "pending" ? "مستني موافقة العميل — اضغط لتأكيد القبول"
+                        : "لسه متبديش — اضغط للإرسال"
+                  }
                   className="mt-0.5 flex-shrink-0 transition-colors disabled:cursor-not-allowed"
                 >
                   {togglingId === task.id ? (
                     <Loader2 size={20} className="text-zinc-300 animate-spin" />
                   ) : task.status === "done" ? (
                     <CheckCircle2 size={20} className="text-emerald-500" />
+                  ) : task.status === "pending" ? (
+                    <Clock size={20} className="text-amber-400 hover:text-amber-500" />
                   ) : (
                     <Circle size={20} className="text-zinc-300 hover:text-indigo-400" />
                   )}
@@ -392,7 +424,11 @@ export default function DailyTasksPanel({
                 {/* content */}
                 <div className="flex-1 min-w-0">
                   <p
-                    className={`text-sm font-medium leading-snug ${task.status === "done" ? "line-through text-zinc-400" : "text-zinc-800"
+                    className={`text-sm font-medium leading-snug ${task.status === "done"
+                      ? "line-through text-zinc-400"
+                      : task.status === "pending"
+                        ? "text-amber-800"
+                        : "text-zinc-800"
                       }`}
                   >
                     {task.title}
@@ -639,8 +675,8 @@ export default function DailyTasksPanel({
                         type="button"
                         onClick={() => setQuickRef({ ...quickRef, platform: p.value })}
                         className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-colors ${quickRef.platform === p.value
-                            ? "bg-purple-600 border-purple-600 text-white"
-                            : "bg-white border-zinc-200 text-zinc-500 hover:border-purple-300"
+                          ? "bg-purple-600 border-purple-600 text-white"
+                          : "bg-white border-zinc-200 text-zinc-500 hover:border-purple-300"
                           }`}
                       >
                         {p.label}
