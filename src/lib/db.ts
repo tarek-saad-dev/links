@@ -5,7 +5,8 @@
 import { Pool } from "pg";
 
 // Use the provided connection string
-const connectionString = "postgresql://neondb_owner:npg_JFoDL76Mvtfa@ep-delicate-paper-antese7n-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+const connectionString =
+  "postgresql://neondb_owner:npg_JFoDL76Mvtfa@ep-delicate-paper-antese7n-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
 export const pool = new Pool({
   connectionString,
@@ -40,8 +41,14 @@ export async function initDatabase(): Promise<void> {
         slug TEXT NOT NULL,
         notes TEXT DEFAULT '',
         color TEXT NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE NOT NULL
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        style_refs JSONB DEFAULT '[]'
       )
+    `);
+
+    // Add style_refs column to existing tables that may not have it
+    await client.query(`
+      ALTER TABLE clients ADD COLUMN IF NOT EXISTS style_refs JSONB DEFAULT '[]'
     `);
 
     // Create materials table

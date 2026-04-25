@@ -3,7 +3,6 @@
 import { useState, useMemo, useRef } from "react";
 import { useAppData } from "@/lib/useAppData";
 import type { MaterialLink, MaterialType, SortOption, Client } from "@/lib/types";
-import { migrateToDatabase } from "@/lib/storage";
 import { searchMatch } from "@/lib/utils";
 import Modal from "./Modal";
 import ClientForm from "./ClientForm";
@@ -20,8 +19,6 @@ import {
   Library,
   Star,
   Plus,
-  Download,
-  Upload,
   LayoutDashboard,
   FolderOpen,
   Pencil,
@@ -30,7 +27,7 @@ import {
   Tag,
   SlidersHorizontal,
   ChevronDown,
-  Database,
+  RefreshCw,
 } from "lucide-react";
 
 type Tab = "dashboard" | "clients" | "materials";
@@ -50,8 +47,6 @@ export default function AppShell() {
     editMaterial,
     removeMaterial,
     toggleFav,
-    syncToServer,
-    syncFromServer,
     syncFromDatabase,
     importData,
     addStyleRef,
@@ -217,41 +212,13 @@ export default function AppShell() {
               <div className="hidden sm:flex items-center gap-1">
                 <button
                   onClick={async () => {
-                    const result = await syncToServer();
-                    const msg = result.db && result.json
-                      ? "تم التخزين في قاعدة البيانات والملف"
-                      : result.db
-                        ? "تم التخزين في قاعدة البيانات فقط"
-                        : result.json
-                          ? "تم التخزين في الملف فقط"
-                          : "فشل التخزين";
-                    alert(msg);
+                    const data = await syncFromDatabase();
+                    if (!data) alert("تعذّر الاتصال بقاعدة البيانات");
                   }}
                   className="p-2 rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 transition-colors"
-                  title="حفظ في قاعدة البيانات"
+                  title="تحديث من قاعدة البيانات"
                 >
-                  <Download size={18} />
-                </button>
-                <button
-                  onClick={async () => {
-                    const data = await syncFromServer();
-                    alert(data ? "تم استيراد من قاعدة البيانات" : "فشل الاستيراد");
-                  }}
-                  className="p-2 rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 transition-colors"
-                  title="استيراد من قاعدة البيانات"
-                >
-                  <Upload size={18} />
-                </button>
-                <button
-                  onClick={async () => {
-                    const data = { clients, materials };
-                    const ok = await migrateToDatabase(data);
-                    alert(ok ? `تم نقل ${data.clients.length} عميل و ${data.materials.length} ماتريال للقاعدة` : "فشل النقل للقاعدة");
-                  }}
-                  className="p-2 rounded-lg text-indigo-500 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
-                  title="نقل كل البيانات للقاعدة (Migrate)"
-                >
-                  <Database size={18} />
+                  <RefreshCw size={18} />
                 </button>
               </div>
               <input

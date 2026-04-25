@@ -14,22 +14,16 @@ import type {
   StyleRef,
   SocialPlatform,
 } from "./types";
-import { loadData, saveData, syncToServer, syncFromServer } from "./storage";
+import { loadData, saveData } from "./storage";
 import { generateId, generateSlug, getRandomColor } from "./utils";
 
 // ─── Helpers ────────────────────────────────────────────────
 
-let cachedData: AppData | null = null;
-
 async function getData(): Promise<AppData> {
-  if (!cachedData) {
-    cachedData = await loadData();
-  }
-  return cachedData;
+  return await loadData();
 }
 
 async function persist(data: AppData): Promise<void> {
-  cachedData = data;
   await saveData(data);
 }
 
@@ -200,15 +194,6 @@ export async function setAllData(data: AppData): Promise<void> {
   await persist(data);
 }
 
-// ─── Sync Operations ──────────────────────────────────────────
-
-export async function syncLocalToServer(): Promise<{
-  json: boolean;
-  db: boolean;
-}> {
-  return await syncToServer();
-}
-
 // ─── Style Refs ──────────────────────────────────────────────
 
 export async function addStyleRef(
@@ -262,12 +247,4 @@ export async function deleteStyleRef(
     (r) => r.id !== refId,
   );
   await persist(data);
-}
-
-export async function syncServerToLocal(): Promise<AppData | null> {
-  const data = await syncFromServer();
-  if (data) {
-    cachedData = data;
-  }
-  return data;
 }

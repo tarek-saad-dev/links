@@ -31,13 +31,14 @@ export async function getClientsFromDB(): Promise<Client[]> {
 
 export async function saveClientToDB(client: Client): Promise<void> {
   await pool.query(
-    `INSERT INTO clients (id, name, slug, notes, color, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO clients (id, name, slug, notes, color, created_at, style_refs)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        slug = EXCLUDED.slug,
        notes = EXCLUDED.notes,
-       color = EXCLUDED.color`,
+       color = EXCLUDED.color,
+       style_refs = EXCLUDED.style_refs`,
     [
       client.id,
       client.name,
@@ -45,6 +46,7 @@ export async function saveClientToDB(client: Client): Promise<void> {
       client.notes,
       client.color,
       client.createdAt,
+      JSON.stringify(client.styleRefs ?? []),
     ],
   );
 }
@@ -130,9 +132,17 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
     // Insert clients
     for (const c of data.clients) {
       await client.query(
-        `INSERT INTO clients (id, name, slug, notes, color, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [c.id, c.name, c.slug, c.notes, c.color, c.createdAt],
+        `INSERT INTO clients (id, name, slug, notes, color, created_at, style_refs)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          c.id,
+          c.name,
+          c.slug,
+          c.notes,
+          c.color,
+          c.createdAt,
+          JSON.stringify(c.styleRefs ?? []),
+        ],
       );
     }
 
