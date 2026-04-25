@@ -58,6 +58,7 @@ export async function initDatabase(): Promise<void> {
         client_id TEXT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
         title TEXT NOT NULL,
         url TEXT NOT NULL,
+        local_path TEXT DEFAULT '',
         shoot_date TEXT,
         type TEXT NOT NULL CHECK (type IN ('project', 'library')),
         tags TEXT[] DEFAULT '{}',
@@ -66,6 +67,10 @@ export async function initDatabase(): Promise<void> {
         created_at TIMESTAMP WITH TIME ZONE NOT NULL,
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL
       )
+    `);
+
+    await client.query(`
+      ALTER TABLE materials ADD COLUMN IF NOT EXISTS local_path TEXT DEFAULT ''
     `);
 
     // Create daily_tasks table

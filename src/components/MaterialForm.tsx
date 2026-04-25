@@ -27,12 +27,14 @@ export default function MaterialForm({
   const [tags, setTags] = useState<string[]>(material?.tags ?? []);
   const [description, setDescription] = useState(material?.description ?? "");
   const [isFavorite, setIsFavorite] = useState(material?.isFavorite ?? false);
+  const [localPath, setLocalPath] = useState(material?.localPath ?? "");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (material) {
       setTitle(material.title);
       setUrl(material.url);
+      setLocalPath(material.localPath ?? "");
       setClientId(material.clientId);
       setShootDate(material.shootDate);
       setType(material.type);
@@ -57,6 +59,7 @@ export default function MaterialForm({
     onSubmit({
       title,
       url,
+      localPath,
       clientId,
       shootDate,
       type,
@@ -104,6 +107,20 @@ export default function MaterialForm({
             <p className="text-xs text-rose-500 mt-1">{errors.url}</p>
           )}
         </div>
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-medium text-zinc-700 mb-1">
+            مسار على الجهاز
+            <span className="mr-1.5 text-xs text-zinc-400 font-normal">(اختياري — لو الماتريال محمّل محلياً)</span>
+          </label>
+          <input
+            type="text"
+            value={localPath}
+            onChange={(e) => setLocalPath(e.target.value)}
+            placeholder="مثال: D:\Projects\Client\Shoot2025"
+            className={inputClass}
+            dir="ltr"
+          />
+        </div>
         <div>
           <label className="block text-sm font-medium text-zinc-700 mb-1">
             العميل <span className="text-rose-500">*</span>
@@ -143,22 +160,20 @@ export default function MaterialForm({
             <button
               type="button"
               onClick={() => setType("project")}
-              className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all border ${
-                type === "project"
+              className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all border ${type === "project"
                   ? "bg-blue-50 border-blue-300 text-blue-700"
                   : "bg-white border-zinc-200 text-zinc-500 hover:border-zinc-300"
-              }`}
+                }`}
             >
               📁 مشروع
             </button>
             <button
               type="button"
               onClick={() => setType("library")}
-              className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all border ${
-                type === "library"
+              className={`flex-1 px-3 py-2.5 rounded-xl text-sm font-medium transition-all border ${type === "library"
                   ? "bg-amber-50 border-amber-300 text-amber-700"
                   : "bg-white border-zinc-200 text-zinc-500 hover:border-zinc-300"
-              }`}
+                }`}
             >
               📚 مكتبة
             </button>

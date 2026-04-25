@@ -66,6 +66,7 @@ export async function getMaterialsFromDB(): Promise<MaterialLink[]> {
     clientId: row.client_id,
     title: row.title,
     url: row.url,
+    localPath: row.local_path || "",
     shootDate: row.shoot_date || "",
     type: row.type,
     tags: row.tags || [],
@@ -78,12 +79,13 @@ export async function getMaterialsFromDB(): Promise<MaterialLink[]> {
 
 export async function saveMaterialToDB(material: MaterialLink): Promise<void> {
   await pool.query(
-    `INSERT INTO materials (id, client_id, title, url, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    `INSERT INTO materials (id, client_id, title, url, local_path, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
      ON CONFLICT (id) DO UPDATE SET
        client_id = EXCLUDED.client_id,
        title = EXCLUDED.title,
        url = EXCLUDED.url,
+       local_path = EXCLUDED.local_path,
        shoot_date = EXCLUDED.shoot_date,
        type = EXCLUDED.type,
        tags = EXCLUDED.tags,
@@ -95,6 +97,7 @@ export async function saveMaterialToDB(material: MaterialLink): Promise<void> {
       material.clientId,
       material.title,
       material.url,
+      material.localPath || null,
       material.shootDate || null,
       material.type,
       material.tags,
@@ -203,13 +206,14 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
     // Insert materials
     for (const m of data.materials) {
       await client.query(
-        `INSERT INTO materials (id, client_id, title, url, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        `INSERT INTO materials (id, client_id, title, url, local_path, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
         [
           m.id,
           m.clientId,
           m.title,
           m.url,
+          m.localPath || null,
           m.shootDate || null,
           m.type,
           m.tags,

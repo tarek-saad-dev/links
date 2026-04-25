@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Client, MaterialLink } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import Badge from "./Badge";
@@ -11,6 +12,8 @@ import {
   Library,
   FolderOpen,
   Calendar,
+  Copy,
+  Check,
 } from "lucide-react";
 
 interface MaterialCardProps {
@@ -29,14 +32,21 @@ export default function MaterialCard({
   onToggleFav,
 }: MaterialCardProps) {
   const isLibrary = material.type === "library";
+  const [copied, setCopied] = useState(false);
+
+  async function copyLocalPath() {
+    if (!material.localPath) return;
+    await navigator.clipboard.writeText(material.localPath);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <div
-      className={`group relative bg-white rounded-xl border transition-all hover:shadow-md ${
-        isLibrary
+      className={`group relative bg-white rounded-xl border transition-all hover:shadow-md ${isLibrary
           ? "border-amber-200 bg-gradient-to-l from-amber-50/50 to-white"
           : "border-zinc-200"
-      }`}
+        }`}
     >
       {isLibrary && (
         <div className="absolute top-0 left-0 w-1 h-full bg-amber-400 rounded-l-xl" />
@@ -94,11 +104,10 @@ export default function MaterialCard({
           <div className="flex flex-col gap-1">
             <button
               onClick={() => onToggleFav(material.id)}
-              className={`p-1.5 rounded-lg transition-colors ${
-                material.isFavorite
+              className={`p-1.5 rounded-lg transition-colors ${material.isFavorite
                   ? "text-amber-500 hover:bg-amber-50"
                   : "text-zinc-300 hover:text-amber-500 hover:bg-amber-50"
-              }`}
+                }`}
               title={material.isFavorite ? "إزالة من المفضلة" : "إضافة للمفضلة"}
             >
               <Star size={16} fill={material.isFavorite ? "currentColor" : "none"} />
@@ -112,6 +121,18 @@ export default function MaterialCard({
             >
               <ExternalLink size={16} />
             </a>
+            {material.localPath && (
+              <button
+                onClick={copyLocalPath}
+                className={`p-1.5 rounded-lg transition-colors ${copied
+                    ? "text-emerald-600 bg-emerald-50"
+                    : "text-zinc-400 hover:text-amber-600 hover:bg-amber-50"
+                  }`}
+                title={copied ? "تم النسخ!" : "نسخ مسار الجهاز"}
+              >
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+              </button>
+            )}
             <button
               onClick={() => onEdit(material)}
               className="p-1.5 rounded-lg text-zinc-400 hover:text-blue-600 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100"

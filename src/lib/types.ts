@@ -30,6 +30,7 @@ export interface MaterialLink {
   clientId: string;
   title: string;
   url: string;
+  localPath?: string;
   shootDate: string;
   type: MaterialType;
   tags: string[];

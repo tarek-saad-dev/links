@@ -73,6 +73,10 @@ function migrateData(data: AppData): AppData {
       ...c,
       styleRefs: c.styleRefs ?? [],
     })),
+    materials: data.materials.map((m) => ({
+      ...m,
+      localPath: m.localPath ?? "",
+    })),
     dailyTasks: data.dailyTasks ?? [],
   };
 }
