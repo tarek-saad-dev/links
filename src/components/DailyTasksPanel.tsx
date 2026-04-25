@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { DailyTask, Client, MaterialLink, StyleRef } from "@/lib/types";
+import type { DailyTask, Client, MaterialLink, MaterialType, StyleRef } from "@/lib/types";
 import {
   CheckCircle2,
   Circle,
@@ -15,6 +15,7 @@ import {
   FileText,
   X,
   Pencil,
+  Loader2,
 } from "lucide-react";
 
 interface DailyTasksPanelProps {
@@ -37,6 +38,7 @@ interface DailyTasksPanelProps {
   ) => Promise<DailyTask | undefined>;
   onReorder: (date: string, orderedIds: string[]) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onAddMaterial: (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">) => Promise<MaterialLink>;
 }
 
 const TODAY = new Date().toISOString().split("T")[0];
@@ -56,6 +58,8 @@ function addDays(dateStr: string, n: number) {
   return d.toISOString().split("T")[0];
 }
 
+const ADD_NEW_MATERIAL = "__add_new__";
+
 export default function DailyTasksPanel({
   tasks,
   clients,
@@ -64,6 +68,7 @@ export default function DailyTasksPanel({
   onEdit,
   onReorder,
   onDelete,
+  onAddMaterial,
 }: DailyTasksPanelProps) {
   const [date, setDate] = useState(TODAY);
   const [showForm, setShowForm] = useState(false);
@@ -78,6 +83,50 @@ export default function DailyTasksPanel({
     styleRefId: "" as string,
     notes: "",
   });
+
+  // Loading states
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [reordering, setReordering] = useState(false);
+  const [copiedMatId, setCopiedMatId] = useState<string | null>(null);
+
+  async function handleMaterialClick(mat: MaterialLink) {
+    if (mat.url) {
+      window.open(mat.url, "_blank", "noopener,noreferrer");
+    } else if (mat.localPath) {
+      await navigator.clipboard.writeText(mat.localPath);
+      setCopiedMatId(mat.id);
+      setTimeout(() => setCopiedMatId(null), 2000);
+    }
+  }
+
+  // Inline quick-add material
+  const [quickMat, setQuickMat] = useState({ title: "", url: "", type: "project" as MaterialType });
+  const [quickMatSaving, setQuickMatSaving] = useState(false);
+  const showQuickMat = form.materialId === ADD_NEW_MATERIAL;
+
+  async function handleQuickAddMaterial() {
+    if (!quickMat.title.trim() || !form.clientId) return;
+    setQuickMatSaving(true);
+    try {
+      const mat = await onAddMaterial({
+        title: quickMat.title.trim(),
+        url: quickMat.url.trim(),
+        localPath: "",
+        clientId: form.clientId,
+        shootDate: "",
+        type: quickMat.type,
+        tags: [],
+        description: "",
+        isFavorite: false,
+      });
+      setForm((f) => ({ ...f, materialId: mat.id }));
+      setQuickMat({ title: "", url: "", type: "project" });
+    } finally {
+      setQuickMatSaving(false);
+    }
+  }
 
   const dayTasks = tasks
     .filter((t) => t.date === date)
@@ -101,25 +150,30 @@ export default function DailyTasksPanel({
 
   async function handleSubmit() {
     if (!form.title.trim() || !form.clientId) return;
-    if (editingId) {
-      await onEdit(editingId, {
-        title: form.title,
-        clientId: form.clientId,
-        materialId: form.materialId || null,
-        styleRefId: form.styleRefId || null,
-        notes: form.notes,
-      });
-    } else {
-      await onAdd({
-        title: form.title,
-        clientId: form.clientId,
-        date,
-        materialId: form.materialId || null,
-        styleRefId: form.styleRefId || null,
-        notes: form.notes,
-      });
+    setSubmitting(true);
+    try {
+      if (editingId) {
+        await onEdit(editingId, {
+          title: form.title,
+          clientId: form.clientId,
+          materialId: form.materialId || null,
+          styleRefId: form.styleRefId || null,
+          notes: form.notes,
+        });
+      } else {
+        await onAdd({
+          title: form.title,
+          clientId: form.clientId,
+          date,
+          materialId: form.materialId || null,
+          styleRefId: form.styleRefId || null,
+          notes: form.notes,
+        });
+      }
+      resetForm();
+    } finally {
+      setSubmitting(false);
     }
-    resetForm();
   }
 
   function startEdit(task: DailyTask) {
@@ -135,7 +189,21 @@ export default function DailyTasksPanel({
   }
 
   async function toggleStatus(task: DailyTask) {
-    await onEdit(task.id, { status: task.status === "done" ? "todo" : "done" });
+    setTogglingId(task.id);
+    try {
+      await onEdit(task.id, { status: task.status === "done" ? "todo" : "done" });
+    } finally {
+      setTogglingId(null);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setDeletingId(id);
+    try {
+      await onDelete(id);
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   // Drag-and-drop reorder
@@ -161,7 +229,12 @@ export default function DailyTasksPanel({
     ids.splice(toIdx, 0, draggingId);
     setDraggingId(null);
     setDragOverId(null);
-    await onReorder(date, ids);
+    setReordering(true);
+    try {
+      await onReorder(date, ids);
+    } finally {
+      setReordering(false);
+    }
   }
 
   function getClientColor(clientId: string) {
@@ -172,9 +245,9 @@ export default function DailyTasksPanel({
     return clients.find((c) => c.id === clientId)?.name ?? "";
   }
 
-  function getMaterialTitle(materialId: string | null) {
+  function getMaterial(materialId: string | null): MaterialLink | null {
     if (!materialId) return null;
-    return materials.find((m) => m.id === materialId)?.title ?? null;
+    return materials.find((m) => m.id === materialId) ?? null;
   }
 
   function getStyleRefNote(clientId: string, refId: string | null): StyleRef | null {
@@ -233,7 +306,7 @@ export default function DailyTasksPanel({
       )}
 
       {/* Task list */}
-      <div className="space-y-2">
+      <div className={`space-y-2 transition-opacity duration-200 ${reordering ? "opacity-60 pointer-events-none" : ""}`}>
         {dayTasks.length === 0 && !showForm && (
           <div className="text-center py-10 text-zinc-400 text-sm">
             لا يوجد تاسكات لهذا اليوم
@@ -242,7 +315,7 @@ export default function DailyTasksPanel({
 
         {dayTasks.map((task) => {
           const color = getClientColor(task.clientId);
-          const material = getMaterialTitle(task.materialId);
+          const material = getMaterial(task.materialId);
           const ref = getStyleRefNote(task.clientId, task.styleRefId);
           const isDragOver = dragOverId === task.id;
 
@@ -254,13 +327,12 @@ export default function DailyTasksPanel({
               onDragOver={(e) => onDragOver(e, task.id)}
               onDrop={() => onDrop(task.id)}
               onDragEnd={() => { setDraggingId(null); setDragOverId(null); }}
-              className={`group bg-white rounded-xl border transition-all duration-150 ${
-                isDragOver
-                  ? "border-indigo-400 shadow-md scale-[1.01]"
-                  : task.status === "done"
+              className={`group bg-white rounded-xl border transition-all duration-150 ${isDragOver
+                ? "border-indigo-400 shadow-md scale-[1.01]"
+                : task.status === "done"
                   ? "border-zinc-100 opacity-60"
                   : "border-zinc-200 hover:border-zinc-300 hover:shadow-sm"
-              } ${draggingId === task.id ? "opacity-40" : ""}`}
+                } ${draggingId === task.id ? "opacity-40" : ""}`}
             >
               <div className="flex items-start gap-3 px-3 py-3">
                 {/* drag handle */}
@@ -271,9 +343,12 @@ export default function DailyTasksPanel({
                 {/* status toggle */}
                 <button
                   onClick={() => toggleStatus(task)}
-                  className="mt-0.5 flex-shrink-0 transition-colors"
+                  disabled={togglingId === task.id}
+                  className="mt-0.5 flex-shrink-0 transition-colors disabled:cursor-not-allowed"
                 >
-                  {task.status === "done" ? (
+                  {togglingId === task.id ? (
+                    <Loader2 size={20} className="text-zinc-300 animate-spin" />
+                  ) : task.status === "done" ? (
                     <CheckCircle2 size={20} className="text-emerald-500" />
                   ) : (
                     <Circle size={20} className="text-zinc-300 hover:text-indigo-400" />
@@ -283,9 +358,8 @@ export default function DailyTasksPanel({
                 {/* content */}
                 <div className="flex-1 min-w-0">
                   <p
-                    className={`text-sm font-medium leading-snug ${
-                      task.status === "done" ? "line-through text-zinc-400" : "text-zinc-800"
-                    }`}
+                    className={`text-sm font-medium leading-snug ${task.status === "done" ? "line-through text-zinc-400" : "text-zinc-800"
+                      }`}
                   >
                     {task.title}
                   </p>
@@ -300,12 +374,30 @@ export default function DailyTasksPanel({
 
                   {/* links */}
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {material && (
-                      <span className="flex items-center gap-1 text-xs text-zinc-500 bg-zinc-50 border border-zinc-200 rounded-lg px-2 py-1">
-                        <Link2 size={11} />
-                        {material}
-                      </span>
-                    )}
+                    {material && (() => {
+                      const hasLink = !!(material.url || material.localPath);
+                      const isCopied = copiedMatId === material.id;
+                      const isLocalOnly = !material.url && !!material.localPath;
+                      return hasLink ? (
+                        <button
+                          onClick={() => handleMaterialClick(material)}
+                          title={isLocalOnly ? (isCopied ? "تم نسخ المسار" : "نسخ مسار الجهاز") : "فتح في تاب جديد"}
+                          className={`flex items-center gap-1 text-xs rounded-lg px-2 py-1 border transition-colors ${isCopied
+                              ? "bg-emerald-50 border-emerald-200 text-emerald-600"
+                              : "bg-zinc-50 border-zinc-200 text-zinc-500 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600"
+                            }`}
+                        >
+                          <Link2 size={11} />
+                          {material.title}
+                          {isCopied && <span className="text-emerald-500">✓</span>}
+                        </button>
+                      ) : (
+                        <span className="flex items-center gap-1 text-xs text-zinc-500 bg-zinc-50 border border-zinc-200 rounded-lg px-2 py-1">
+                          <Link2 size={11} />
+                          {material.title}
+                        </span>
+                      );
+                    })()}
                     {ref && (
                       <a
                         href={ref.url}
@@ -336,10 +428,15 @@ export default function DailyTasksPanel({
                     <Pencil size={13} />
                   </button>
                   <button
-                    onClick={() => onDelete(task.id)}
-                    className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                    onClick={() => handleDelete(task.id)}
+                    disabled={deletingId === task.id}
+                    className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:cursor-not-allowed"
                   >
-                    <Trash2 size={13} />
+                    {deletingId === task.id ? (
+                      <Loader2 size={13} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={13} />
+                    )}
                   </button>
                 </div>
               </div>
@@ -387,19 +484,93 @@ export default function DailyTasksPanel({
           </select>
 
           {/* material (optional) */}
-          {selectedClientMaterials.length > 0 && (
-            <select
-              value={form.materialId}
-              onChange={(e) => setForm({ ...form, materialId: e.target.value })}
-              className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
-            >
-              <option value="">ماتريال (اختياري)...</option>
-              {selectedClientMaterials.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.title}
-                </option>
-              ))}
-            </select>
+          {form.clientId && (
+            <div className="space-y-2">
+              <select
+                value={form.materialId}
+                onChange={(e) => {
+                  setForm({ ...form, materialId: e.target.value });
+                  if (e.target.value !== ADD_NEW_MATERIAL) {
+                    setQuickMat({ title: "", url: "", type: "project" });
+                  }
+                }}
+                className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+              >
+                <option value="">ماتريال (اختياري)...</option>
+                {selectedClientMaterials.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.title}
+                  </option>
+                ))}
+                <option value={ADD_NEW_MATERIAL}>➕ إضافة ماتريال جديد...</option>
+              </select>
+
+              {/* inline quick-add */}
+              {showQuickMat && (
+                <div className="rounded-lg border border-indigo-100 bg-indigo-50/60 p-3 space-y-2">
+                  <p className="text-xs font-semibold text-indigo-700">ماتريال جديد</p>
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder="اسم الماتريال..."
+                    value={quickMat.title}
+                    onChange={(e) => setQuickMat({ ...quickMat, title: e.target.value })}
+                    className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+                  />
+                  <input
+                    type="text"
+                    placeholder="الرابط أو المسار (اختياري)..."
+                    value={quickMat.url}
+                    onChange={(e) => setQuickMat({ ...quickMat, url: e.target.value })}
+                    className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+                    dir="ltr"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setQuickMat({ ...quickMat, type: "project" })}
+                      className={`flex-1 text-xs py-1.5 rounded-lg border font-medium transition-colors ${quickMat.type === "project"
+                        ? "bg-blue-50 border-blue-300 text-blue-700"
+                        : "bg-white border-zinc-200 text-zinc-500"
+                        }`}
+                    >
+                      📁 مشروع
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQuickMat({ ...quickMat, type: "library" })}
+                      className={`flex-1 text-xs py-1.5 rounded-lg border font-medium transition-colors ${quickMat.type === "library"
+                        ? "bg-amber-50 border-amber-300 text-amber-700"
+                        : "bg-white border-zinc-200 text-zinc-500"
+                        }`}
+                    >
+                      📚 مكتبة
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleQuickAddMaterial}
+                      disabled={!quickMat.title.trim() || quickMatSaving}
+                      className="flex-1 text-xs font-medium bg-indigo-600 text-white rounded-lg py-1.5 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      {quickMatSaving ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
+                      {quickMatSaving ? "جاري الحفظ..." : "إضافة"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm((f) => ({ ...f, materialId: "" }));
+                        setQuickMat({ title: "", url: "", type: "project" });
+                      }}
+                      className="px-3 text-xs text-zinc-500 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+                    >
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
           {/* style ref (optional) */}
@@ -430,14 +601,20 @@ export default function DailyTasksPanel({
           <div className="flex gap-2 pt-1">
             <button
               onClick={handleSubmit}
-              disabled={!form.title.trim() || !form.clientId}
+              disabled={!form.title.trim() || !form.clientId || submitting}
               className="flex-1 text-sm font-medium bg-indigo-600 text-white rounded-lg py-2 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              {editingId ? "حفظ التعديل" : "إضافة"}
+              {submitting ? (
+                <span className="flex items-center justify-center gap-1.5">
+                  <Loader2 size={14} className="animate-spin" />
+                  {editingId ? "جاري الحفظ..." : "جاري الإضافة..."}
+                </span>
+              ) : editingId ? "حفظ التعديل" : "إضافة"}
             </button>
             <button
               onClick={resetForm}
-              className="px-4 text-sm text-zinc-500 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+              disabled={submitting}
+              className="px-4 text-sm text-zinc-500 border border-zinc-200 rounded-lg hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               إلغاء
             </button>
