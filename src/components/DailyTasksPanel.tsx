@@ -313,7 +313,7 @@ export default function DailyTasksPanel({
           onClick={() => setDate(addDays(date, -1))}
           className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500 transition-colors"
         >
-          <ChevronRight size={18} />
+          <ChevronLeft size={18} />
         </button>
         <div className="text-center">
           <p className="text-sm font-semibold text-zinc-800">{formatDateAr(date)}</p>
@@ -325,7 +325,7 @@ export default function DailyTasksPanel({
           onClick={() => setDate(addDays(date, 1))}
           className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500 transition-colors"
         >
-          <ChevronLeft size={18} />
+          <ChevronRight size={18} />
         </button>
       </div>
 

@@ -42,8 +42,16 @@ export function useAppData() {
         (t) => t.date < today && t.status !== "done",
       );
       if (overdue.length > 0) {
+        const todayTasksCount = (data.dailyTasks ?? []).filter(
+          (t) => t.date === today,
+        ).length;
         await Promise.all(
-          overdue.map((t) => repo.updateDailyTask(t.id, { date: today })),
+          overdue.map((t, i) =>
+            repo.updateDailyTask(t.id, {
+              date: today,
+              order: todayTasksCount + i,
+            }),
+          ),
         );
         const updated = await loadData();
         setDailyTasks(updated.dailyTasks ?? []);
