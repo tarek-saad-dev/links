@@ -300,6 +300,7 @@ export async function updateDailyTask(
       | "styleRefId"
       | "clientId"
       | "order"
+      | "date"
     >
   >,
 ): Promise<DailyTask | undefined> {

@@ -35,6 +35,19 @@ export function useAppData() {
       setMaterials(data.materials);
       setDailyTasks(data.dailyTasks ?? []);
       setReady(true);
+
+      // Rollover: move unfinished tasks from past days to today
+      const today = new Date().toISOString().split("T")[0];
+      const overdue = (data.dailyTasks ?? []).filter(
+        (t) => t.date < today && t.status !== "done",
+      );
+      if (overdue.length > 0) {
+        await Promise.all(
+          overdue.map((t) => repo.updateDailyTask(t.id, { date: today })),
+        );
+        const updated = await loadData();
+        setDailyTasks(updated.dailyTasks ?? []);
+      }
     }
     init();
   }, []);
@@ -183,6 +196,7 @@ export function useAppData() {
           | "styleRefId"
           | "clientId"
           | "order"
+          | "date"
         >
       >,
     ) => {
