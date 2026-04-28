@@ -81,12 +81,23 @@ export async function initDatabase(): Promise<void> {
         title TEXT NOT NULL,
         client_id TEXT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
         material_id TEXT,
-        style_ref_id TEXT,
+        style_ref_ids JSONB DEFAULT '[]',
         status TEXT NOT NULL DEFAULT 'todo',
         "order" INTEGER NOT NULL DEFAULT 0,
         notes TEXT DEFAULT '',
         created_at TIMESTAMP WITH TIME ZONE NOT NULL
       )
+    `);
+
+    await client.query(`
+      DO $$
+      BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'daily_tasks' AND column_name = 'style_ref_id') THEN
+          ALTER TABLE daily_tasks ADD COLUMN IF NOT EXISTS style_ref_ids JSONB DEFAULT '[]';
+          UPDATE daily_tasks SET style_ref_ids = CASE WHEN style_ref_id IS NOT NULL THEN jsonb_build_array(style_ref_id) ELSE '[]' END;
+          ALTER TABLE daily_tasks DROP COLUMN style_ref_id;
+        END IF;
+      END $$;
     `);
 
     console.log("✅ Database tables initialized");

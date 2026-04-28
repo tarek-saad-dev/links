@@ -13,6 +13,7 @@ import EmptyState from "./EmptyState";
 import Badge from "./Badge";
 import StyleRefsPanel from "./StyleRefsPanel";
 import DailyTasksPanel from "./DailyTasksPanel";
+import TaskCalendar from "./TaskCalendar";
 import {
   Search,
   Users,
@@ -30,9 +31,10 @@ import {
   ChevronDown,
   RefreshCw,
   CalendarDays,
+  Calendar,
 } from "lucide-react";
 
-type Tab = "dashboard" | "clients" | "materials" | "tasks";
+type Tab = "dashboard" | "clients" | "materials" | "tasks" | "calendar";
 
 export default function AppShell() {
   const {
@@ -247,6 +249,7 @@ export default function AppShell() {
             {([
               { key: "dashboard" as Tab, label: "الرئيسية", icon: <LayoutDashboard size={16} /> },
               { key: "tasks" as Tab, label: "تاسكات اليوم", icon: <CalendarDays size={16} /> },
+              { key: "calendar" as Tab, label: "كالندر", icon: <Calendar size={16} /> },
               { key: "clients" as Tab, label: "العملاء", icon: <Users size={16} /> },
               { key: "materials" as Tab, label: "الماتريال", icon: <Link2 size={16} /> },
             ]).map((t) => (
@@ -663,6 +666,18 @@ export default function AppShell() {
               onDelete={removeDailyTask}
               onAddMaterial={addMaterial}
               onAddStyleRef={addStyleRef}
+            />
+          </div>
+        )}
+
+        {/* ─── CALENDAR ─── */}
+        {tab === "calendar" && (
+          <div className="max-w-5xl mx-auto">
+            <TaskCalendar
+              tasks={dailyTasks}
+              clients={clients}
+              onAdd={addDailyTask}
+              onEdit={editDailyTask}
             />
           </div>
         )}

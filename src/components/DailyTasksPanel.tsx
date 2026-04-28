@@ -28,13 +28,13 @@ interface DailyTasksPanelProps {
     clientId: string;
     date: string;
     materialId?: string | null;
-    styleRefId?: string | null;
+    styleRefIds?: string[];
     notes?: string;
   }) => Promise<DailyTask>;
   onEdit: (
     id: string,
     updates: Partial<
-      Pick<DailyTask, "title" | "status" | "notes" | "materialId" | "styleRefId" | "clientId" | "order">
+      Pick<DailyTask, "title" | "status" | "notes" | "materialId" | "styleRefIds" | "clientId" | "order">
     >,
   ) => Promise<DailyTask | undefined>;
   onReorder: (date: string, orderedIds: string[]) => Promise<void>;
@@ -92,7 +92,7 @@ export default function DailyTasksPanel({
     title: "",
     clientId: "",
     materialId: "" as string,
-    styleRefId: "" as string,
+    styleRefIds: [] as string[],
     notes: "",
   });
 
@@ -121,7 +121,7 @@ export default function DailyTasksPanel({
   // Inline quick-add style ref
   const [quickRef, setQuickRef] = useState({ platform: "instagram" as SocialPlatform, url: "", note: "" });
   const [quickRefSaving, setQuickRefSaving] = useState(false);
-  const showQuickRef = form.styleRefId === ADD_NEW_REF;
+  const showQuickRef = form.styleRefIds.includes(ADD_NEW_REF);
 
   async function handleQuickAddStyleRef() {
     if (!quickRef.url.trim() || !form.clientId) return;
@@ -133,7 +133,7 @@ export default function DailyTasksPanel({
         note: quickRef.note.trim(),
       });
       if (ref) {
-        setForm((f) => ({ ...f, styleRefId: ref.id }));
+        setForm((f) => ({ ...f, styleRefIds: [...f.styleRefIds, ref.id] }));
         setQuickRef({ platform: "instagram", url: "", note: "" });
       }
     } finally {
@@ -179,7 +179,7 @@ export default function DailyTasksPanel({
     : [];
 
   function resetForm() {
-    setForm({ title: "", clientId: "", materialId: "", styleRefId: "", notes: "" });
+    setForm({ title: "", clientId: "", materialId: "", styleRefIds: [], notes: "" });
     setShowForm(false);
     setEditingId(null);
   }
@@ -193,7 +193,7 @@ export default function DailyTasksPanel({
           title: form.title,
           clientId: form.clientId,
           materialId: form.materialId || null,
-          styleRefId: form.styleRefId || null,
+          styleRefIds: form.styleRefIds,
           notes: form.notes,
         });
       } else {
@@ -202,7 +202,7 @@ export default function DailyTasksPanel({
           clientId: form.clientId,
           date,
           materialId: form.materialId || null,
-          styleRefId: form.styleRefId || null,
+          styleRefIds: form.styleRefIds,
           notes: form.notes,
         });
       }
@@ -218,7 +218,7 @@ export default function DailyTasksPanel({
       title: task.title,
       clientId: task.clientId,
       materialId: task.materialId ?? "",
-      styleRefId: task.styleRefId ?? "",
+      styleRefIds: task.styleRefIds ?? [],
       notes: task.notes,
     });
     setShowForm(true);
@@ -373,7 +373,7 @@ export default function DailyTasksPanel({
         {dayTasks.map((task) => {
           const color = getClientColor(task.clientId);
           const material = getMaterial(task.materialId);
-          const ref = getStyleRefNote(task.clientId, task.styleRefId);
+          const refs = (task.styleRefIds ?? []).map((id) => getStyleRefNote(task.clientId, id)).filter((r): r is StyleRef => r !== null);
           const isDragOver = dragOverId === task.id;
 
           return (
@@ -468,8 +468,9 @@ export default function DailyTasksPanel({
                         </span>
                       );
                     })()}
-                    {ref && (
+                    {refs.map((ref) => (
                       <a
+                        key={ref.id}
                         href={ref.url}
                         target="_blank"
                         rel="noreferrer"
@@ -479,7 +480,7 @@ export default function DailyTasksPanel({
                         <Palette size={11} />
                         {ref.note || ref.platform}
                       </a>
-                    )}
+                    ))}
                     {task.notes && (
                       <span className="flex items-center gap-1 text-xs text-zinc-400">
                         <FileText size={11} />
@@ -541,7 +542,7 @@ export default function DailyTasksPanel({
           <select
             value={form.clientId}
             onChange={(e) =>
-              setForm({ ...form, clientId: e.target.value, materialId: "", styleRefId: "" })
+              setForm({ ...form, clientId: e.target.value, materialId: "", styleRefIds: [] })
             }
             className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
           >
@@ -646,24 +647,46 @@ export default function DailyTasksPanel({
           {/* style ref (optional) */}
           {form.clientId && (
             <div className="space-y-2">
-              <select
-                value={form.styleRefId}
-                onChange={(e) => {
-                  setForm({ ...form, styleRefId: e.target.value });
-                  if (e.target.value !== ADD_NEW_REF) {
-                    setQuickRef({ platform: "instagram", url: "", note: "" });
-                  }
-                }}
-                className="w-full text-sm border border-zinc-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
-              >
-                <option value="">ريفرنس ستايل (اختياري)...</option>
-                {selectedClientStyleRefs.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.platform} {r.note ? `— ${r.note}` : ""}
-                  </option>
-                ))}
-                <option value={ADD_NEW_REF}>➕ إضافة ريفرنس جديد...</option>
-              </select>
+              <p className="text-xs font-medium text-zinc-500">ريفرنس ستايل (اختياري)</p>
+              <div className="flex flex-wrap gap-2">
+                {selectedClientStyleRefs.map((r) => {
+                  const isSelected = form.styleRefIds.includes(r.id);
+                  return (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => {
+                        setForm((f) => ({
+                          ...f,
+                          styleRefIds: isSelected
+                            ? f.styleRefIds.filter((id) => id !== r.id)
+                            : [...f.styleRefIds, r.id],
+                        }));
+                      }}
+                      className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border font-medium transition-colors ${isSelected
+                        ? "bg-purple-600 border-purple-600 text-white"
+                        : "bg-white border-zinc-200 text-zinc-600 hover:border-purple-300"
+                        }`}
+                      style={isSelected ? { backgroundColor: platformColors[r.platform] ?? "#9333ea", borderColor: platformColors[r.platform] ?? "#9333ea" } : undefined}
+                    >
+                      {isSelected && <CheckCircle2 size={12} />}
+                      {r.platform} {r.note ? `— ${r.note}` : ""}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm((f) => ({ ...f, styleRefIds: [...f.styleRefIds, ADD_NEW_REF] }));
+                  }}
+                  className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border font-medium transition-colors ${form.styleRefIds.includes(ADD_NEW_REF)
+                    ? "bg-purple-100 border-purple-300 text-purple-700"
+                    : "bg-white border-zinc-200 text-zinc-600 hover:border-purple-300"
+                    }`}
+                >
+                  ➕ إضافة جديد
+                </button>
+              </div>
 
               {showQuickRef && (
                 <div className="rounded-lg border border-purple-100 bg-purple-50/60 p-3 space-y-2">
@@ -712,7 +735,7 @@ export default function DailyTasksPanel({
                     <button
                       type="button"
                       onClick={() => {
-                        setForm((f) => ({ ...f, styleRefId: "" }));
+                        setForm((f) => ({ ...f, styleRefIds: f.styleRefIds.filter((id) => id !== ADD_NEW_REF) }));
                         setQuickRef({ platform: "instagram", url: "", note: "" });
                       }}
                       className="px-3 text-xs text-zinc-500 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"

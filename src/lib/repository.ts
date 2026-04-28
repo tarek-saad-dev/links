@@ -265,7 +265,7 @@ export async function createDailyTask(input: {
   clientId: string;
   date: string;
   materialId?: string | null;
-  styleRefId?: string | null;
+  styleRefIds?: string[];
   notes?: string;
 }): Promise<DailyTask> {
   const data = await getData();
@@ -277,7 +277,7 @@ export async function createDailyTask(input: {
     clientId: input.clientId,
     date: input.date,
     materialId: input.materialId ?? null,
-    styleRefId: input.styleRefId ?? null,
+    styleRefIds: input.styleRefIds ?? [],
     status: "todo",
     order: dayTasks.length,
     notes: input.notes?.trim() ?? "",
@@ -297,7 +297,7 @@ export async function updateDailyTask(
       | "status"
       | "notes"
       | "materialId"
-      | "styleRefId"
+      | "styleRefIds"
       | "clientId"
       | "order"
       | "date"

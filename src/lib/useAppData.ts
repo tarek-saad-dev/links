@@ -181,7 +181,7 @@ export function useAppData() {
       clientId: string;
       date: string;
       materialId?: string | null;
-      styleRefId?: string | null;
+      styleRefIds?: string[];
       notes?: string;
     }) => {
       const task = await repo.createDailyTask(input);
@@ -201,7 +201,7 @@ export function useAppData() {
           | "status"
           | "notes"
           | "materialId"
-          | "styleRefId"
+          | "styleRefIds"
           | "clientId"
           | "order"
           | "date"

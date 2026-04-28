@@ -48,7 +48,7 @@ export interface DailyTask {
   title: string;
   clientId: string;
   materialId: string | null;
-  styleRefId: string | null;
+  styleRefIds: string[];
   status: TaskStatus;
   order: number;
   notes: string;

@@ -125,7 +125,11 @@ export async function getDailyTasksFromDB(): Promise<DailyTask[]> {
     title: row.title,
     clientId: row.client_id,
     materialId: row.material_id ?? null,
-    styleRefId: row.style_ref_id ?? null,
+    styleRefIds: Array.isArray(row.style_ref_ids)
+      ? row.style_ref_ids
+      : row.style_ref_ids
+        ? JSON.parse(row.style_ref_ids)
+        : [],
     status: row.status,
     order: row.order,
     notes: row.notes || "",
@@ -135,14 +139,14 @@ export async function getDailyTasksFromDB(): Promise<DailyTask[]> {
 
 export async function saveDailyTaskToDB(task: DailyTask): Promise<void> {
   await pool.query(
-    `INSERT INTO daily_tasks (id, date, title, client_id, material_id, style_ref_id, status, "order", notes, created_at)
+    `INSERT INTO daily_tasks (id, date, title, client_id, material_id, style_ref_ids, status, "order", notes, created_at)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
      ON CONFLICT (id) DO UPDATE SET
        date = EXCLUDED.date,
        title = EXCLUDED.title,
        client_id = EXCLUDED.client_id,
        material_id = EXCLUDED.material_id,
-       style_ref_id = EXCLUDED.style_ref_id,
+       style_ref_ids = EXCLUDED.style_ref_ids,
        status = EXCLUDED.status,
        "order" = EXCLUDED."order",
        notes = EXCLUDED.notes`,
@@ -152,7 +156,7 @@ export async function saveDailyTaskToDB(task: DailyTask): Promise<void> {
       task.title,
       task.clientId,
       task.materialId ?? null,
-      task.styleRefId ?? null,
+      task.styleRefIds,
       task.status,
       task.order,
       task.notes,
@@ -228,7 +232,7 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
     // Insert daily tasks
     for (const t of data.dailyTasks ?? []) {
       await client.query(
-        `INSERT INTO daily_tasks (id, date, title, client_id, material_id, style_ref_id, status, "order", notes, created_at)
+        `INSERT INTO daily_tasks (id, date, title, client_id, material_id, style_ref_ids, status, "order", notes, created_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
         [
           t.id,
@@ -236,7 +240,7 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
           t.title,
           t.clientId,
           t.materialId ?? null,
-          t.styleRefId ?? null,
+          JSON.stringify(t.styleRefIds),
           t.status,
           t.order,
           t.notes,
