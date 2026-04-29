@@ -8,6 +8,7 @@ interface MaterialFormProps {
   material?: MaterialLink | null;
   clients: Client[];
   defaultClientId?: string;
+  workspaceId: string;
   onSubmit: (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">) => void | Promise<void>;
   onCancel: () => void;
   pending?: boolean;
@@ -17,6 +18,7 @@ export default function MaterialForm({
   material,
   clients,
   defaultClientId,
+  workspaceId,
   onSubmit,
   onCancel,
   pending,
@@ -68,6 +70,7 @@ export default function MaterialForm({
       tags,
       description,
       isFavorite,
+      workspaceId,
     });
   }
 

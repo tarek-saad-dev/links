@@ -592,6 +592,7 @@ export default function WorkspaceShell({ workspaceId }: WorkspaceShellProps) {
           material={editingMaterial}
           clients={workspaceClients}
           defaultClientId={selectedClientId ?? undefined}
+          workspaceId={workspaceId}
           onSubmit={editingMaterial ? handleEditMaterial : handleAddMaterial}
           onCancel={() => {
             setShowMaterialModal(false);
