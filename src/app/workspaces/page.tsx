@@ -2,7 +2,7 @@
 
 import { useAppData } from "@/lib/useAppData";
 import { useState } from "react";
-import { ArrowLeft, Plus, Trash2, Edit2, Palette, CheckCircle2, ArrowRight, Wallet, UserCircle, Lightbulb } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Edit2, Palette, CheckCircle2, ArrowRight, Wallet, UserCircle, Lightbulb, ArrowUp, ArrowDown } from "lucide-react";
 import type { WorkspaceType } from "@/lib/types";
 import Link from "next/link";
 import Modal from "@/components/Modal";
@@ -27,6 +27,7 @@ export default function WorkspacesPage() {
     addWorkspace,
     editWorkspace,
     removeWorkspace,
+    reorderWorkspaces,
     stats,
   } = useAppData();
 
@@ -118,14 +119,45 @@ export default function WorkspacesPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {workspaces.map((workspace) => (
-              <Link
+            {workspaces.map((workspace, index) => (
+              <div
                 key={workspace.id}
-                href={`/workspace/${workspace.id}`}
                 className="group bg-white rounded-xl border border-zinc-200 p-5 hover:border-indigo-300 hover:shadow-sm transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
+                    {/* Order Badge */}
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-xs font-bold text-zinc-500 bg-zinc-100 px-2 py-1 rounded">
+                        #{workspace.order}
+                      </span>
+                      <div className="flex flex-col gap-0.5">
+                        <button
+                          onClick={() => {
+                            if (index === 0) return;
+                            const newOrder = [...workspaces.map(w => w.id)];
+                            [newOrder[index], newOrder[index - 1]] = [newOrder[index - 1], newOrder[index]];
+                            reorderWorkspaces(newOrder);
+                          }}
+                          disabled={index === 0}
+                          className="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded disabled:opacity-30"
+                        >
+                          <ArrowUp size={14} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (index === workspaces.length - 1) return;
+                            const newOrder = [...workspaces.map(w => w.id)];
+                            [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+                            reorderWorkspaces(newOrder);
+                          }}
+                          disabled={index === workspaces.length - 1}
+                          className="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded disabled:opacity-30"
+                        >
+                          <ArrowDown size={14} />
+                        </button>
+                      </div>
+                    </div>
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center"
                       style={{ backgroundColor: workspace.color + "20" }}
@@ -138,10 +170,10 @@ export default function WorkspacesPage() {
                       </h3>
                       {/* Type Badge */}
                       <span className={`inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded text-xs ${workspace.type === "salary"
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                          : workspace.type === "freelance"
-                            ? "bg-blue-50 text-blue-700 border border-blue-200"
-                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : workspace.type === "freelance"
+                          ? "bg-blue-50 text-blue-700 border border-blue-200"
+                          : "bg-amber-50 text-amber-700 border border-amber-200"
                         }`}>
                         {workspace.type === "salary" && <Wallet size={12} />}
                         {workspace.type === "freelance" && <UserCircle size={12} />}
@@ -156,20 +188,20 @@ export default function WorkspacesPage() {
                     </div>
                   </div>
                   <div className="flex gap-1">
+                    <Link
+                      href={`/workspace/${workspace.id}`}
+                      className="p-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg"
+                    >
+                      <ArrowRight size={16} className="rotate-180" />
+                    </Link>
                     <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        startEdit(workspace);
-                      }}
+                      onClick={() => startEdit(workspace)}
                       className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-lg"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+                      onClick={() => {
                         if (confirm("هل أنت متأكد من حذف هذا الـWorkspace؟ سيتم حذف جميع البيانات المرتبطة به!")) {
                           removeWorkspace(workspace.id);
                         }
@@ -204,11 +236,14 @@ export default function WorkspacesPage() {
                 </div>
 
                 {/* Open Link */}
-                <div className="flex items-center gap-1 mt-4 text-sm text-indigo-600 group-hover:text-indigo-700">
+                <Link
+                  href={`/workspace/${workspace.id}`}
+                  className="flex items-center gap-1 mt-4 text-sm text-indigo-600 hover:text-indigo-700"
+                >
                   <span>فتح الـWorkspace</span>
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform rotate-180" />
-                </div>
-              </Link>
+                  <ArrowRight size={16} className="rotate-180" />
+                </Link>
+              </div>
             ))}
           </div>
         )}
@@ -270,8 +305,8 @@ export default function WorkspacesPage() {
                   type="button"
                   onClick={() => setType(key)}
                   className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${type === key
-                      ? `border-${color}-500 bg-${color}-50 text-${color}-700`
-                      : "border-zinc-200 hover:border-zinc-300 text-zinc-600"
+                    ? `border-${color}-500 bg-${color}-50 text-${color}-700`
+                    : "border-zinc-200 hover:border-zinc-300 text-zinc-600"
                     }`}
                 >
                   <Icon size={20} />
