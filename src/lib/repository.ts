@@ -41,9 +41,16 @@ export async function getClient(id: string): Promise<Client | undefined> {
 
 export async function createClient(
   input: Pick<Client, "name" | "notes" | "workspaceId"> &
-    Partial<Pick<Client, "color">>,
+    Partial<Pick<Client, "color" | "order">>,
 ): Promise<Client> {
   const data = await getData();
+  const workspaceClients = data.clients.filter(
+    (c) => c.workspaceId === input.workspaceId,
+  );
+  const maxOrder =
+    workspaceClients.length > 0
+      ? Math.max(...workspaceClients.map((c) => c.order ?? 0))
+      : -1;
   const client: Client = {
     id: generateId(),
     workspaceId: input.workspaceId,
@@ -51,6 +58,7 @@ export async function createClient(
     slug: generateSlug(input.name),
     notes: input.notes ?? "",
     color: input.color || getRandomColor(),
+    order: input.order ?? maxOrder + 1,
     createdAt: new Date().toISOString(),
     styleRefs: [],
   };
@@ -61,7 +69,7 @@ export async function createClient(
 
 export async function updateClient(
   id: string,
-  updates: Partial<Pick<Client, "name" | "notes" | "color">>,
+  updates: Partial<Pick<Client, "name" | "notes" | "color" | "order">>,
 ): Promise<Client | undefined> {
   const data = await getData();
   const idx = data.clients.findIndex((c) => c.id === id);

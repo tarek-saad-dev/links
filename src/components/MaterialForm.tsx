@@ -9,7 +9,7 @@ interface MaterialFormProps {
   clients: Client[];
   defaultClientId?: string;
   workspaceId: string;
-  onSubmit: (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">) => void | Promise<void>;
+  onSubmit: (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt" | "order"> & { order?: number }) => void | Promise<void>;
   onCancel: () => void;
   pending?: boolean;
 }

@@ -40,7 +40,7 @@ interface DailyTasksPanelProps {
   ) => Promise<DailyTask | undefined>;
   onReorder: (date: string, orderedIds: string[]) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
-  onAddMaterial: (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">) => Promise<MaterialLink>;
+  onAddMaterial: (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt" | "order"> & { order?: number }) => Promise<MaterialLink>;
   onAddStyleRef: (clientId: string, input: { platform: SocialPlatform; url: string; note?: string }) => Promise<StyleRef | undefined>;
 }
 

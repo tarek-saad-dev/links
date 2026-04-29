@@ -23,6 +23,7 @@ export interface Workspace {
   description?: string;
   type: WorkspaceType;
   isActive: boolean;
+  order: number;
   createdAt: string;
 }
 
@@ -33,6 +34,7 @@ export interface Client {
   slug: string;
   notes: string;
   color: string;
+  order: number;
   createdAt: string;
   styleRefs: StyleRef[];
 }
@@ -51,6 +53,7 @@ export interface MaterialLink {
   tags: string[];
   description: string;
   isFavorite: boolean;
+  order: number;
   createdAt: string;
   updatedAt: string;
 }

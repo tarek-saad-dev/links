@@ -15,6 +15,7 @@ interface QuickAddFormProps {
     shootDate: string;
     description: string;
     isFavorite: boolean;
+    order?: number;
   }) => void;
 }
 

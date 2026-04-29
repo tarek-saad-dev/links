@@ -177,15 +177,16 @@ export default function WorkspaceShell({ workspaceId }: WorkspaceShellProps) {
   );
 
   const handleAddMaterial = useCallback(
-    async (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">) => {
+    async (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt" | "order"> & { order?: number }) => {
       await addMaterial({ ...data, workspaceId });
       setShowMaterialModal(false);
+      setEditingMaterial(null);
     },
     [addMaterial, workspaceId]
   );
 
   const handleEditMaterial = useCallback(
-    async (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">) => {
+    async (data: Omit<MaterialLink, "id" | "createdAt" | "updatedAt" | "order"> & { order?: number }) => {
       if (editingMaterial) {
         await editMaterial(editingMaterial.id, data);
         setEditingMaterial(null);
@@ -472,7 +473,12 @@ export default function WorkspaceShell({ workspaceId }: WorkspaceShellProps) {
                           {client.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-zinc-900 text-sm">{client.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-zinc-900 text-sm">{client.name}</h3>
+                            <span className="text-xs font-medium text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded">
+                              #{client.order}
+                            </span>
+                          </div>
                           {client.notes && (
                             <p className="text-xs text-zinc-400 truncate">{client.notes}</p>
                           )}
@@ -540,7 +546,7 @@ export default function WorkspaceShell({ workspaceId }: WorkspaceShellProps) {
                           </button>
                           <StyleRefsPanel
                             clientId={client.id}
-                            styleRefs={client.styleRefs}
+                            refs={client.styleRefs}
                             onAdd={async (input) => {
                               await addStyleRef(client.id, input);
                             }}

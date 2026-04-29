@@ -31,20 +31,22 @@ export async function getWorkspacesFromDB(): Promise<Workspace[]> {
     description: row.description || "",
     type: row.type || "freelance",
     isActive: row.is_active ?? true,
+    order: row.order ?? 0,
     createdAt: row.created_at,
   }));
 }
 
 export async function saveWorkspaceToDB(workspace: Workspace): Promise<void> {
   await pool.query(
-    `INSERT INTO workspaces (id, name, color, description, type, is_active, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO workspaces (id, name, color, description, type, is_active, order, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      ON CONFLICT (id) DO UPDATE SET
        name = EXCLUDED.name,
        color = EXCLUDED.color,
        description = EXCLUDED.description,
        type = EXCLUDED.type,
-       is_active = EXCLUDED.is_active`,
+       is_active = EXCLUDED.is_active,
+       order = EXCLUDED.order`,
     [
       workspace.id,
       workspace.name,
@@ -52,6 +54,7 @@ export async function saveWorkspaceToDB(workspace: Workspace): Promise<void> {
       workspace.description || "",
       workspace.type,
       workspace.isActive,
+      workspace.order,
       workspace.createdAt,
     ],
   );
@@ -74,6 +77,7 @@ export async function getClientsFromDB(): Promise<Client[]> {
     slug: row.slug,
     notes: row.notes || "",
     color: row.color,
+    order: row.order ?? 0,
     createdAt: row.created_at,
     styleRefs: row.style_refs ?? [],
   }));
@@ -81,14 +85,15 @@ export async function getClientsFromDB(): Promise<Client[]> {
 
 export async function saveClientToDB(client: Client): Promise<void> {
   await pool.query(
-    `INSERT INTO clients (id, workspace_id, name, slug, notes, color, created_at, style_refs)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `INSERT INTO clients (id, workspace_id, name, slug, notes, color, order, created_at, style_refs)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
      ON CONFLICT (id) DO UPDATE SET
        workspace_id = EXCLUDED.workspace_id,
        name = EXCLUDED.name,
        slug = EXCLUDED.slug,
        notes = EXCLUDED.notes,
        color = EXCLUDED.color,
+       order = EXCLUDED.order,
        style_refs = EXCLUDED.style_refs`,
     [
       client.id,
@@ -97,6 +102,7 @@ export async function saveClientToDB(client: Client): Promise<void> {
       client.slug,
       client.notes,
       client.color,
+      client.order,
       client.createdAt,
       JSON.stringify(client.styleRefs ?? []),
     ],
@@ -125,6 +131,7 @@ export async function getMaterialsFromDB(): Promise<MaterialLink[]> {
     tags: row.tags || [],
     description: row.description || "",
     isFavorite: row.is_favorite,
+    order: row.order ?? 0,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }));
@@ -132,8 +139,8 @@ export async function getMaterialsFromDB(): Promise<MaterialLink[]> {
 
 export async function saveMaterialToDB(material: MaterialLink): Promise<void> {
   await pool.query(
-    `INSERT INTO materials (id, workspace_id, client_id, title, url, local_path, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+    `INSERT INTO materials (id, workspace_id, client_id, title, url, local_path, shoot_date, type, tags, description, is_favorite, order, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
      ON CONFLICT (id) DO UPDATE SET
        workspace_id = EXCLUDED.workspace_id,
        client_id = EXCLUDED.client_id,
@@ -145,6 +152,7 @@ export async function saveMaterialToDB(material: MaterialLink): Promise<void> {
        tags = EXCLUDED.tags,
        description = EXCLUDED.description,
        is_favorite = EXCLUDED.is_favorite,
+       order = EXCLUDED.order,
        updated_at = EXCLUDED.updated_at`,
     [
       material.id,
@@ -158,6 +166,7 @@ export async function saveMaterialToDB(material: MaterialLink): Promise<void> {
       material.tags,
       material.description,
       material.isFavorite,
+      material.order,
       material.createdAt,
       material.updatedAt,
     ],

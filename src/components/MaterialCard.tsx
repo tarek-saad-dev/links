@@ -78,9 +78,14 @@ export default function MaterialCard({
                 </span>
               )}
             </div>
-            <h3 className="font-semibold text-zinc-900 text-sm leading-snug mb-1 truncate">
-              {material.title}
-            </h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-semibold text-zinc-900 text-sm leading-snug truncate">
+                {material.title}
+              </h3>
+              <span className="text-xs font-medium text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded shrink-0">
+                #{material.order}
+              </span>
+            </div>
             {material.description && (
               <p className="text-xs text-zinc-500 line-clamp-2 mb-2">
                 {material.description}

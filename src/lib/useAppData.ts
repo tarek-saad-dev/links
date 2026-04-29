@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type {
   Client,
   MaterialLink,
@@ -47,13 +47,13 @@ export function useAppData() {
     [pending],
   );
 
-  // Filtered data by active workspace
-  const workspaceClients = clients.filter(
-    (c) => c.workspaceId === activeWorkspaceId,
-  );
-  const workspaceMaterials = materials.filter(
-    (m) => m.workspaceId === activeWorkspaceId,
-  );
+  // Filtered data by active workspace (sorted by order)
+  const workspaceClients = clients
+    .filter((c) => c.workspaceId === activeWorkspaceId)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const workspaceMaterials = materials
+    .filter((m) => m.workspaceId === activeWorkspaceId)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const workspaceTasks = dailyTasks.filter(
     (t) => t.workspaceId === activeWorkspaceId,
   );
@@ -85,6 +85,7 @@ export function useAppData() {
           color: "#6366f1",
           type: "freelance",
           isActive: true,
+          order: 0,
           createdAt: new Date().toISOString(),
         };
         ws = [defaultWs];
@@ -189,10 +190,40 @@ export function useAppData() {
     [refresh],
   );
 
+  const reorderClients = useCallback(
+    async (orderedIds: string[]) => {
+      const data = await repo.getAllData();
+      orderedIds.forEach((id, index) => {
+        const idx = data.clients.findIndex((c) => c.id === id);
+        if (idx !== -1) {
+          data.clients[idx].order = index;
+        }
+      });
+      await repo.setAllData(data);
+      await refresh();
+    },
+    [refresh],
+  );
+
   // Material operations
   const addMaterial = useCallback(
-    async (input: Omit<MaterialLink, "id" | "createdAt" | "updatedAt">) => {
-      const m = await repo.createMaterial(input);
+    async (
+      input: Omit<MaterialLink, "id" | "createdAt" | "updatedAt" | "order"> & {
+        order?: number;
+      },
+    ) => {
+      const data = await repo.getAllData();
+      const clientMaterials = data.materials.filter(
+        (m) => m.clientId === input.clientId,
+      );
+      const maxOrder =
+        clientMaterials.length > 0
+          ? Math.max(...clientMaterials.map((m) => m.order ?? 0))
+          : -1;
+      const m = await repo.createMaterial({
+        ...input,
+        order: input.order ?? maxOrder + 1,
+      });
       await refresh();
       return m;
     },
@@ -214,6 +245,21 @@ export function useAppData() {
   const removeMaterial = useCallback(
     async (id: string) => {
       await repo.deleteMaterial(id);
+      await refresh();
+    },
+    [refresh],
+  );
+
+  const reorderMaterials = useCallback(
+    async (orderedIds: string[]) => {
+      const data = await repo.getAllData();
+      orderedIds.forEach((id, index) => {
+        const idx = data.materials.findIndex((m) => m.id === id);
+        if (idx !== -1) {
+          data.materials[idx].order = index;
+        }
+      });
+      await repo.setAllData(data);
       await refresh();
     },
     [refresh],
@@ -357,7 +403,14 @@ export function useAppData() {
       color: string;
       description?: string;
       type?: Workspace["type"];
+      order?: number;
     }) => {
+      const data = await repo.getAllData();
+      const workspaces = data.workspaces ?? [];
+      const maxOrder =
+        workspaces.length > 0
+          ? Math.max(...workspaces.map((w) => w.order ?? 0))
+          : -1;
       const newWs: Workspace = {
         id: crypto.randomUUID(),
         name: input.name,
@@ -365,10 +418,10 @@ export function useAppData() {
         description: input.description,
         type: input.type ?? "freelance",
         isActive: true,
+        order: input.order ?? maxOrder + 1,
         createdAt: new Date().toISOString(),
       };
-      const data = await repo.getAllData();
-      data.workspaces = [...(data.workspaces ?? []), newWs];
+      data.workspaces = [...workspaces, newWs];
       await repo.setAllData(data);
       await refresh();
       return newWs;
@@ -379,7 +432,9 @@ export function useAppData() {
   const editWorkspace = useCallback(
     async (
       id: string,
-      updates: Partial<Pick<Workspace, "name" | "color" | "type" | "isActive">>,
+      updates: Partial<
+        Pick<Workspace, "name" | "color" | "type" | "isActive" | "order">
+      >,
     ) => {
       const data = await repo.getAllData();
       const idx = (data.workspaces ?? []).findIndex((w) => w.id === id);
@@ -391,6 +446,22 @@ export function useAppData() {
       await repo.setAllData(data);
       await refresh();
       return (data.workspaces ?? [])[idx];
+    },
+    [refresh],
+  );
+
+  const reorderWorkspaces = useCallback(
+    async (orderedIds: string[]) => {
+      const data = await repo.getAllData();
+      const ws = data.workspaces ?? [];
+      orderedIds.forEach((id, index) => {
+        const idx = ws.findIndex((w) => w.id === id);
+        if (idx !== -1) {
+          ws[idx].order = index;
+        }
+      });
+      await repo.setAllData(data);
+      await refresh();
     },
     [refresh],
   );
@@ -445,6 +516,11 @@ export function useAppData() {
       withPending("editWorkspace", () => editWorkspace(id, updates))(),
     [editWorkspace, withPending],
   );
+  const wrappedReorderWorkspaces = useCallback(
+    (orderedIds: string[]) =>
+      withPending("reorderWorkspaces", () => reorderWorkspaces(orderedIds))(),
+    [reorderWorkspaces, withPending],
+  );
   const wrappedRemoveWorkspace = useCallback(
     (id: string) => withPending("removeWorkspace", () => removeWorkspace(id))(),
     [removeWorkspace, withPending],
@@ -463,6 +539,11 @@ export function useAppData() {
     (id: string) => withPending("removeClient", () => removeClient(id))(),
     [removeClient, withPending],
   );
+  const wrappedReorderClients = useCallback(
+    (orderedIds: string[]) =>
+      withPending("reorderClients", () => reorderClients(orderedIds))(),
+    [reorderClients, withPending],
+  );
   const wrappedAddMaterial = useCallback(
     (input: Parameters<typeof addMaterial>[0]) =>
       withPending("addMaterial", () => addMaterial(input))(),
@@ -476,6 +557,11 @@ export function useAppData() {
   const wrappedRemoveMaterial = useCallback(
     (id: string) => withPending("removeMaterial", () => removeMaterial(id))(),
     [removeMaterial, withPending],
+  );
+  const wrappedReorderMaterials = useCallback(
+    (orderedIds: string[]) =>
+      withPending("reorderMaterials", () => reorderMaterials(orderedIds))(),
+    [reorderMaterials, withPending],
   );
   const wrappedToggleFav = useCallback(
     (id: string) => withPending("toggleFav", () => toggleFav(id))(),
@@ -506,14 +592,21 @@ export function useAppData() {
     [addStyleRef, withPending],
   );
 
+  // Sort workspaces by order
+  const sortedWorkspaces = useMemo(
+    () => [...workspaces].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    [workspaces],
+  );
+
   return {
     ready,
     pending,
-    workspaces,
+    workspaces: sortedWorkspaces,
     activeWorkspaceId,
     selectWorkspace,
     addWorkspace: wrappedAddWorkspace,
     editWorkspace: wrappedEditWorkspace,
+    reorderWorkspaces: wrappedReorderWorkspaces,
     removeWorkspace: wrappedRemoveWorkspace,
     // Filtered data for current workspace
     clients: workspaceClients,
@@ -529,9 +622,11 @@ export function useAppData() {
     addClient: wrappedAddClient,
     editClient: wrappedEditClient,
     removeClient: wrappedRemoveClient,
+    reorderClients: wrappedReorderClients,
     addMaterial: wrappedAddMaterial,
     editMaterial: wrappedEditMaterial,
     removeMaterial: wrappedRemoveMaterial,
+    reorderMaterials: wrappedReorderMaterials,
     toggleFav: wrappedToggleFav,
     syncFromDatabase,
     exportData,

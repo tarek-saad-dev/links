@@ -738,12 +738,12 @@ export default function AppShell() {
           material={editingMaterial}
           clients={clients}
           defaultClientId={selectedClientId ?? undefined}
+          workspaceId={activeWorkspaceId ?? ""}
           onSubmit={async (data) => {
             if (editingMaterial) {
               await editMaterial(editingMaterial.id, data);
             } else {
-              if (!activeWorkspaceId) return;
-              await addMaterial({ ...data, workspaceId: activeWorkspaceId });
+              await addMaterial(data);
             }
             setMaterialModal(false);
             setEditingMaterial(null);

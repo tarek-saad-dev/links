@@ -71,6 +71,7 @@ function migrateData(data: AppData): AppData {
   const workspaces = (data.workspaces ?? []).map((w) => ({
     ...w,
     type: w.type ?? "freelance",
+    order: w.order ?? 0,
   }));
   let defaultWorkspaceId = workspaces.find((w) => w.isActive)?.id;
   if (workspaces.length === 0) {
@@ -82,6 +83,7 @@ function migrateData(data: AppData): AppData {
       description: "الشركة الرئيسية - فيديو إيديتور",
       type: "freelance",
       isActive: true,
+      order: 0,
       createdAt: new Date().toISOString(),
     });
   }
@@ -92,11 +94,13 @@ function migrateData(data: AppData): AppData {
       ...c,
       workspaceId: c.workspaceId ?? defaultWorkspaceId!,
       styleRefs: c.styleRefs ?? [],
+      order: c.order ?? 0,
     })),
     materials: (data.materials ?? []).map((m) => ({
       ...m,
       workspaceId: m.workspaceId ?? defaultWorkspaceId!,
       localPath: m.localPath ?? "",
+      order: m.order ?? 0,
     })),
     dailyTasks: (data.dailyTasks ?? []).map((t) => ({
       ...t,

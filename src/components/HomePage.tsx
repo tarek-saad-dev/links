@@ -82,6 +82,9 @@ function WorkspaceColumn({
               style={{ backgroundColor: workspace.color }}
             />
             <h3 className="font-semibold text-zinc-900">{workspace.name}</h3>
+            <span className="text-xs font-medium text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded">
+              #{workspace.order}
+            </span>
           </div>
           <span className="text-xs text-zinc-500 bg-white px-2 py-1 rounded-full border border-zinc-200">
             {tasks.length} تاسك
@@ -89,10 +92,10 @@ function WorkspaceColumn({
         </div>
         {/* Type Badge */}
         <span className={`inline-flex items-center gap-1 text-xs ${workspace.type === "salary"
-            ? "text-emerald-700"
-            : workspace.type === "freelance"
-              ? "text-blue-700"
-              : "text-amber-700"
+          ? "text-emerald-700"
+          : workspace.type === "freelance"
+            ? "text-blue-700"
+            : "text-amber-700"
           }`}>
           {workspace.type === "salary" && <Wallet size={12} />}
           {workspace.type === "freelance" && <UserCircle size={12} />}
