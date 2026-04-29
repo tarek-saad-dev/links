@@ -40,11 +40,13 @@ export async function getClient(id: string): Promise<Client | undefined> {
 }
 
 export async function createClient(
-  input: Pick<Client, "name" | "notes"> & Partial<Pick<Client, "color">>,
+  input: Pick<Client, "name" | "notes" | "workspaceId"> &
+    Partial<Pick<Client, "color">>,
 ): Promise<Client> {
   const data = await getData();
   const client: Client = {
     id: generateId(),
+    workspaceId: input.workspaceId,
     name: input.name.trim(),
     slug: generateSlug(input.name),
     notes: input.notes ?? "",
@@ -262,6 +264,7 @@ export async function getDailyTasks(date?: string): Promise<DailyTask[]> {
 
 export async function createDailyTask(input: {
   title: string;
+  workspaceId: string;
   clientId: string;
   date: string;
   materialId?: string | null;
@@ -273,6 +276,7 @@ export async function createDailyTask(input: {
   const dayTasks = tasks.filter((t) => t.date === input.date);
   const task: DailyTask = {
     id: generateId(),
+    workspaceId: input.workspaceId,
     title: input.title.trim(),
     clientId: input.clientId,
     date: input.date,

@@ -23,6 +23,7 @@ interface DailyTasksPanelProps {
   tasks: DailyTask[];
   clients: Client[];
   materials: MaterialLink[];
+  activeWorkspaceId: string;
   onAdd: (input: {
     title: string;
     clientId: string;
@@ -75,6 +76,7 @@ export default function DailyTasksPanel({
   tasks,
   clients,
   materials,
+  activeWorkspaceId,
   onAdd,
   onEdit,
   onReorder,
@@ -149,6 +151,7 @@ export default function DailyTasksPanel({
         title: quickMat.title.trim(),
         url: quickMat.url.trim(),
         localPath: "",
+        workspaceId: activeWorkspaceId,
         clientId: form.clientId,
         shootDate: "",
         type: quickMat.type,

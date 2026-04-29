@@ -67,17 +67,41 @@ async function saveToDatabase(data: AppData): Promise<boolean> {
 // ─── Migration helper (backward compat) ───────────────────────
 
 function migrateData(data: AppData): AppData {
+  // Create default workspace if none exists
+  const workspaces = (data.workspaces ?? []).map((w) => ({
+    ...w,
+    type: w.type ?? "freelance",
+  }));
+  let defaultWorkspaceId = workspaces.find((w) => w.isActive)?.id;
+  if (workspaces.length === 0) {
+    defaultWorkspaceId = crypto.randomUUID();
+    workspaces.push({
+      id: defaultWorkspaceId,
+      name: "BlackIce",
+      color: "#4f46e5",
+      description: "الشركة الرئيسية - فيديو إيديتور",
+      type: "freelance",
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    });
+  }
+
   return {
-    ...data,
-    clients: data.clients.map((c) => ({
+    workspaces,
+    clients: (data.clients ?? []).map((c) => ({
       ...c,
+      workspaceId: c.workspaceId ?? defaultWorkspaceId!,
       styleRefs: c.styleRefs ?? [],
     })),
-    materials: data.materials.map((m) => ({
+    materials: (data.materials ?? []).map((m) => ({
       ...m,
+      workspaceId: m.workspaceId ?? defaultWorkspaceId!,
       localPath: m.localPath ?? "",
     })),
-    dailyTasks: data.dailyTasks ?? [],
+    dailyTasks: (data.dailyTasks ?? []).map((t) => ({
+      ...t,
+      workspaceId: t.workspaceId ?? defaultWorkspaceId!,
+    })),
   };
 }
 
@@ -99,7 +123,7 @@ export async function loadData(): Promise<AppData> {
   const local = loadFromLocalStorage();
   if (local) return local;
 
-  return { clients: [], materials: [], dailyTasks: [] };
+  return { workspaces: [], clients: [], materials: [], dailyTasks: [] };
 }
 
 /**

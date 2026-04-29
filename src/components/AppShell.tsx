@@ -14,6 +14,7 @@ import Badge from "./Badge";
 import StyleRefsPanel from "./StyleRefsPanel";
 import DailyTasksPanel from "./DailyTasksPanel";
 import TaskCalendar from "./TaskCalendar";
+import WorkspaceSelector from "./WorkspaceSelector";
 import {
   Search,
   Users,
@@ -39,6 +40,12 @@ type Tab = "dashboard" | "clients" | "materials" | "tasks" | "calendar";
 export default function AppShell() {
   const {
     ready,
+    workspaces,
+    activeWorkspaceId,
+    selectWorkspace,
+    addWorkspace,
+    editWorkspace,
+    removeWorkspace,
     clients,
     materials,
     stats,
@@ -244,27 +251,37 @@ export default function AppShell() {
               )}
             </div>
           </div>
-          {/* Tabs */}
-          <div className="flex gap-1 -mb-px">
-            {([
-              { key: "dashboard" as Tab, label: "الرئيسية", icon: <LayoutDashboard size={16} /> },
-              { key: "tasks" as Tab, label: "تاسكات اليوم", icon: <CalendarDays size={16} /> },
-              { key: "calendar" as Tab, label: "كالندر", icon: <Calendar size={16} /> },
-              { key: "clients" as Tab, label: "العملاء", icon: <Users size={16} /> },
-              { key: "materials" as Tab, label: "الماتريال", icon: <Link2 size={16} /> },
-            ]).map((t) => (
-              <button
-                key={t.key}
-                onClick={() => { setTab(t.key); setSelectedClientId(null); }}
-                className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${tab === t.key
-                  ? "border-indigo-600 text-indigo-600"
-                  : "border-transparent text-zinc-500 hover:text-zinc-700"
-                  }`}
-              >
-                {t.icon}
-                {t.label}
-              </button>
-            ))}
+          {/* Workspace Selector + Tabs */}
+          <div className="flex items-center justify-between">
+            <div className="flex gap-1 -mb-px">
+              {([
+                { key: "dashboard" as Tab, label: "الرئيسية", icon: <LayoutDashboard size={16} /> },
+                { key: "tasks" as Tab, label: "تاسكات اليوم", icon: <CalendarDays size={16} /> },
+                { key: "calendar" as Tab, label: "كالندر", icon: <Calendar size={16} /> },
+                { key: "clients" as Tab, label: "العملاء", icon: <Users size={16} /> },
+                { key: "materials" as Tab, label: "الماتريال", icon: <Link2 size={16} /> },
+              ]).map((t) => (
+                <button
+                  key={t.key}
+                  onClick={() => { setTab(t.key); setSelectedClientId(null); }}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${tab === t.key
+                    ? "border-indigo-600 text-indigo-600"
+                    : "border-transparent text-zinc-500 hover:text-zinc-700"
+                    }`}
+                >
+                  {t.icon}
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <WorkspaceSelector
+              workspaces={workspaces}
+              activeWorkspaceId={activeWorkspaceId}
+              onSelect={selectWorkspace}
+              onAdd={addWorkspace}
+              onEdit={editWorkspace}
+              onDelete={removeWorkspace}
+            />
           </div>
         </div>
       </header>
@@ -297,7 +314,10 @@ export default function AppShell() {
             {/* Quick Add */}
             <QuickAddForm
               clients={clients}
-              onAdd={async (data) => await addMaterial(data)}
+              onAdd={async (data) => {
+                if (!activeWorkspaceId) return;
+                await addMaterial({ ...data, workspaceId: activeWorkspaceId });
+              }}
             />
 
             {/* Client Filter - Main Dashboard Filter */}
@@ -654,12 +674,13 @@ export default function AppShell() {
         )}
 
         {/* ─── TASKS ─── */}
-        {tab === "tasks" && (
+        {tab === "tasks" && activeWorkspaceId && (
           <div className="max-w-2xl mx-auto">
             <DailyTasksPanel
               tasks={dailyTasks}
               clients={clients}
               materials={materials}
+              activeWorkspaceId={activeWorkspaceId}
               onAdd={addDailyTask}
               onEdit={editDailyTask}
               onReorder={reorderTasks}
@@ -721,7 +742,8 @@ export default function AppShell() {
             if (editingMaterial) {
               await editMaterial(editingMaterial.id, data);
             } else {
-              await addMaterial(data);
+              if (!activeWorkspaceId) return;
+              await addMaterial({ ...data, workspaceId: activeWorkspaceId });
             }
             setMaterialModal(false);
             setEditingMaterial(null);

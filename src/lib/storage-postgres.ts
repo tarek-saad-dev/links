@@ -10,7 +10,56 @@
  */
 
 import { pool } from "./db";
-import type { AppData, Client, DailyTask, MaterialLink } from "./types";
+import type {
+  AppData,
+  Client,
+  DailyTask,
+  MaterialLink,
+  Workspace,
+} from "./types";
+
+// ─── Workspace Operations ──────────────────────────────────────
+
+export async function getWorkspacesFromDB(): Promise<Workspace[]> {
+  const result = await pool.query(
+    "SELECT * FROM workspaces ORDER BY created_at DESC",
+  );
+  return result.rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    color: row.color,
+    description: row.description || "",
+    type: row.type || "freelance",
+    isActive: row.is_active ?? true,
+    createdAt: row.created_at,
+  }));
+}
+
+export async function saveWorkspaceToDB(workspace: Workspace): Promise<void> {
+  await pool.query(
+    `INSERT INTO workspaces (id, name, color, description, type, is_active, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     ON CONFLICT (id) DO UPDATE SET
+       name = EXCLUDED.name,
+       color = EXCLUDED.color,
+       description = EXCLUDED.description,
+       type = EXCLUDED.type,
+       is_active = EXCLUDED.is_active`,
+    [
+      workspace.id,
+      workspace.name,
+      workspace.color,
+      workspace.description || "",
+      workspace.type,
+      workspace.isActive,
+      workspace.createdAt,
+    ],
+  );
+}
+
+export async function deleteWorkspaceFromDB(id: string): Promise<void> {
+  await pool.query("DELETE FROM workspaces WHERE id = $1", [id]);
+}
 
 // ─── Client Operations ─────────────────────────────────────────
 
@@ -20,6 +69,7 @@ export async function getClientsFromDB(): Promise<Client[]> {
   );
   return result.rows.map((row) => ({
     id: row.id,
+    workspaceId: row.workspace_id || "",
     name: row.name,
     slug: row.slug,
     notes: row.notes || "",
@@ -31,9 +81,10 @@ export async function getClientsFromDB(): Promise<Client[]> {
 
 export async function saveClientToDB(client: Client): Promise<void> {
   await pool.query(
-    `INSERT INTO clients (id, name, slug, notes, color, created_at, style_refs)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO clients (id, workspace_id, name, slug, notes, color, created_at, style_refs)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      ON CONFLICT (id) DO UPDATE SET
+       workspace_id = EXCLUDED.workspace_id,
        name = EXCLUDED.name,
        slug = EXCLUDED.slug,
        notes = EXCLUDED.notes,
@@ -41,6 +92,7 @@ export async function saveClientToDB(client: Client): Promise<void> {
        style_refs = EXCLUDED.style_refs`,
     [
       client.id,
+      client.workspaceId,
       client.name,
       client.slug,
       client.notes,
@@ -63,6 +115,7 @@ export async function getMaterialsFromDB(): Promise<MaterialLink[]> {
   );
   return result.rows.map((row) => ({
     id: row.id,
+    workspaceId: row.workspace_id || "",
     clientId: row.client_id,
     title: row.title,
     url: row.url,
@@ -79,9 +132,10 @@ export async function getMaterialsFromDB(): Promise<MaterialLink[]> {
 
 export async function saveMaterialToDB(material: MaterialLink): Promise<void> {
   await pool.query(
-    `INSERT INTO materials (id, client_id, title, url, local_path, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    `INSERT INTO materials (id, workspace_id, client_id, title, url, local_path, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
      ON CONFLICT (id) DO UPDATE SET
+       workspace_id = EXCLUDED.workspace_id,
        client_id = EXCLUDED.client_id,
        title = EXCLUDED.title,
        url = EXCLUDED.url,
@@ -94,6 +148,7 @@ export async function saveMaterialToDB(material: MaterialLink): Promise<void> {
        updated_at = EXCLUDED.updated_at`,
     [
       material.id,
+      material.workspaceId,
       material.clientId,
       material.title,
       material.url,
@@ -121,6 +176,7 @@ export async function getDailyTasksFromDB(): Promise<DailyTask[]> {
   );
   return result.rows.map((row) => ({
     id: row.id,
+    workspaceId: row.workspace_id || "",
     date: row.date,
     title: row.title,
     clientId: row.client_id,
@@ -139,9 +195,10 @@ export async function getDailyTasksFromDB(): Promise<DailyTask[]> {
 
 export async function saveDailyTaskToDB(task: DailyTask): Promise<void> {
   await pool.query(
-    `INSERT INTO daily_tasks (id, date, title, client_id, material_id, style_ref_ids, status, "order", notes, created_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    `INSERT INTO daily_tasks (id, workspace_id, date, title, client_id, material_id, style_ref_ids, status, "order", notes, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      ON CONFLICT (id) DO UPDATE SET
+       workspace_id = EXCLUDED.workspace_id,
        date = EXCLUDED.date,
        title = EXCLUDED.title,
        client_id = EXCLUDED.client_id,
@@ -152,6 +209,7 @@ export async function saveDailyTaskToDB(task: DailyTask): Promise<void> {
        notes = EXCLUDED.notes`,
     [
       task.id,
+      task.workspaceId,
       task.date,
       task.title,
       task.clientId,
@@ -172,12 +230,13 @@ export async function deleteDailyTaskFromDB(id: string): Promise<void> {
 // ─── Bulk Operations ──────────────────────────────────────────
 
 export async function getAllDataFromDB(): Promise<AppData> {
-  const [clients, materials, dailyTasks] = await Promise.all([
+  const [workspaces, clients, materials, dailyTasks] = await Promise.all([
+    getWorkspacesFromDB(),
     getClientsFromDB(),
     getMaterialsFromDB(),
     getDailyTasksFromDB(),
   ]);
-  return { clients, materials, dailyTasks };
+  return { workspaces, clients, materials, dailyTasks };
 }
 
 export async function saveAllDataToDB(data: AppData): Promise<void> {
@@ -189,14 +248,25 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
     await client.query("DELETE FROM daily_tasks");
     await client.query("DELETE FROM materials");
     await client.query("DELETE FROM clients");
+    await client.query("DELETE FROM workspaces");
+
+    // Insert workspaces
+    for (const w of data.workspaces ?? []) {
+      await client.query(
+        `INSERT INTO workspaces (id, name, color, description, is_active, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [w.id, w.name, w.color, w.description || "", w.isActive, w.createdAt],
+      );
+    }
 
     // Insert clients
     for (const c of data.clients) {
       await client.query(
-        `INSERT INTO clients (id, name, slug, notes, color, created_at, style_refs)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        `INSERT INTO clients (id, workspace_id, name, slug, notes, color, created_at, style_refs)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [
           c.id,
+          c.workspaceId,
           c.name,
           c.slug,
           c.notes,
@@ -210,10 +280,11 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
     // Insert materials
     for (const m of data.materials) {
       await client.query(
-        `INSERT INTO materials (id, client_id, title, url, local_path, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+        `INSERT INTO materials (id, workspace_id, client_id, title, url, local_path, shoot_date, type, tags, description, is_favorite, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
         [
           m.id,
+          m.workspaceId,
           m.clientId,
           m.title,
           m.url,
@@ -232,10 +303,11 @@ export async function saveAllDataToDB(data: AppData): Promise<void> {
     // Insert daily tasks
     for (const t of data.dailyTasks ?? []) {
       await client.query(
-        `INSERT INTO daily_tasks (id, date, title, client_id, material_id, style_ref_ids, status, "order", notes, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        `INSERT INTO daily_tasks (id, workspace_id, date, title, client_id, material_id, style_ref_ids, status, "order", notes, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
         [
           t.id,
+          t.workspaceId,
           t.date,
           t.title,
           t.clientId,
@@ -265,6 +337,7 @@ export async function clearAllDataFromDB(): Promise<void> {
     await client.query("DELETE FROM daily_tasks");
     await client.query("DELETE FROM materials");
     await client.query("DELETE FROM clients");
+    await client.query("DELETE FROM workspaces");
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");

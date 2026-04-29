@@ -22,6 +22,7 @@ interface MaterialCardProps {
   onEdit: (m: MaterialLink) => void;
   onDelete: (id: string) => void;
   onToggleFav: (id: string) => void;
+  pending?: Record<string, boolean>;
 }
 
 export default function MaterialCard({
@@ -30,6 +31,7 @@ export default function MaterialCard({
   onEdit,
   onDelete,
   onToggleFav,
+  pending,
 }: MaterialCardProps) {
   const isLibrary = material.type === "library";
   const [copied, setCopied] = useState(false);
@@ -44,8 +46,8 @@ export default function MaterialCard({
   return (
     <div
       className={`group relative bg-white rounded-xl border transition-all hover:shadow-md ${isLibrary
-          ? "border-amber-200 bg-gradient-to-l from-amber-50/50 to-white"
-          : "border-zinc-200"
+        ? "border-amber-200 bg-gradient-to-l from-amber-50/50 to-white"
+        : "border-zinc-200"
         }`}
     >
       {isLibrary && (
@@ -104,13 +106,18 @@ export default function MaterialCard({
           <div className="flex flex-col gap-1">
             <button
               onClick={() => onToggleFav(material.id)}
+              disabled={pending?.toggleFav}
               className={`p-1.5 rounded-lg transition-colors ${material.isFavorite
-                  ? "text-amber-500 hover:bg-amber-50"
-                  : "text-zinc-300 hover:text-amber-500 hover:bg-amber-50"
-                }`}
+                ? "text-amber-500 hover:bg-amber-50"
+                : "text-zinc-300 hover:text-amber-500 hover:bg-amber-50"
+                } disabled:opacity-50`}
               title={material.isFavorite ? "إزالة من المفضلة" : "إضافة للمفضلة"}
             >
-              <Star size={16} fill={material.isFavorite ? "currentColor" : "none"} />
+              {pending?.toggleFav ? (
+                <span className="w-4 h-4 border-2 border-zinc-300 border-t-amber-500 rounded-full animate-spin inline-block" />
+              ) : (
+                <Star size={16} fill={material.isFavorite ? "currentColor" : "none"} />
+              )}
             </button>
             <a
               href={material.url}
@@ -125,8 +132,8 @@ export default function MaterialCard({
               <button
                 onClick={copyLocalPath}
                 className={`p-1.5 rounded-lg transition-colors ${copied
-                    ? "text-emerald-600 bg-emerald-50"
-                    : "text-zinc-400 hover:text-amber-600 hover:bg-amber-50"
+                  ? "text-emerald-600 bg-emerald-50"
+                  : "text-zinc-400 hover:text-amber-600 hover:bg-amber-50"
                   }`}
                 title={copied ? "تم النسخ!" : "نسخ مسار الجهاز"}
               >
@@ -135,17 +142,27 @@ export default function MaterialCard({
             )}
             <button
               onClick={() => onEdit(material)}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-blue-600 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100"
+              disabled={pending?.editMaterial}
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-blue-600 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
               title="تعديل"
             >
-              <Pencil size={16} />
+              {pending?.editMaterial ? (
+                <span className="w-4 h-4 border-2 border-zinc-300 border-t-blue-500 rounded-full animate-spin inline-block" />
+              ) : (
+                <Pencil size={16} />
+              )}
             </button>
             <button
               onClick={() => onDelete(material.id)}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors opacity-0 group-hover:opacity-100"
+              disabled={pending?.removeMaterial}
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-600 hover:bg-rose-50 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
               title="حذف"
             >
-              <Trash2 size={16} />
+              {pending?.removeMaterial ? (
+                <span className="w-4 h-4 border-2 border-zinc-300 border-t-rose-500 rounded-full animate-spin inline-block" />
+              ) : (
+                <Trash2 size={16} />
+              )}
             </button>
           </div>
         </div>

@@ -13,8 +13,22 @@ export interface StyleRef {
   createdAt: string;
 }
 
+export type WorkspaceType = "salary" | "freelance" | "opportunity";
+
+export interface Workspace {
+  id: string;
+  name: string;
+  color: string;
+  icon?: string;
+  description?: string;
+  type: WorkspaceType;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface Client {
   id: string;
+  workspaceId: string;
   name: string;
   slug: string;
   notes: string;
@@ -27,6 +41,7 @@ export type MaterialType = "project" | "library";
 
 export interface MaterialLink {
   id: string;
+  workspaceId: string;
   clientId: string;
   title: string;
   url: string;
@@ -44,6 +59,7 @@ export type TaskStatus = "todo" | "pending" | "done";
 
 export interface DailyTask {
   id: string;
+  workspaceId: string;
   date: string;
   title: string;
   clientId: string;
@@ -56,6 +72,7 @@ export interface DailyTask {
 }
 
 export interface AppData {
+  workspaces: Workspace[];
   clients: Client[];
   materials: MaterialLink[];
   dailyTasks: DailyTask[];

@@ -25,6 +25,7 @@ export async function POST(request: Request) {
     await saveAllDataToDB(data);
     return NextResponse.json({
       success: true,
+      workspacesCount: (data.workspaces ?? []).length,
       clientsCount: data.clients.length,
       materialsCount: data.materials.length,
     });

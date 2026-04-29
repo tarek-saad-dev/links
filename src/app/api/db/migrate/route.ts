@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     if (!connected) {
       return NextResponse.json(
         { error: "Failed to connect to database" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     if (!Array.isArray(data.clients) || !Array.isArray(data.materials)) {
       return NextResponse.json(
         { error: "Invalid data format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,6 +34,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
+      workspacesCount: (data.workspaces ?? []).length,
       clientsCount: data.clients.length,
       materialsCount: data.materials.length,
     });
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     console.error("Migration error:", error);
     return NextResponse.json(
       { error: "Migration failed", details: String(error) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -55,7 +56,7 @@ export async function DELETE() {
     console.error("Clear error:", error);
     return NextResponse.json(
       { error: "Failed to clear database", details: String(error) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
